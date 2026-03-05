@@ -17,18 +17,26 @@ const _AUTH = (() => {
     return (h + 0x9e3779b9).toString(16).padStart(8,'0').toUpperCase();
   };
   /* Identifiants hashés — mot de passe jamais en clair dans le DOM */
+const _AUTH = (() => {
+  const _h = (pwd) => pwd; // ici ton hash ou fonction si tu en as une
   return {
-    SUPER:        _h('SuperAdmin2025!'),
-    ORGANISATEUR_ROUGE: _h('RougeFC@2025'),
-    ORGANISATEUR_BLANC: _h('BlancFC@2025'),
-    OBSERVATEUR:  _h('Observe2025'),
+    SUPER: _h('Malaga2025!'),
+    ORGANISATEUR_ROUGE: _h('Rouge2025'),
+    ORGANISATEUR_BLANC: _h('BlancFC@'),
+    OBSERVATEUR: _h(''), // Observateur sans mot de passe
     check: (role, pwd) => {
-      const k = { super: 'SUPER', rouge: 'ORGANISATEUR_ROUGE', blanc: 'ORGANISATEUR_BLANC', obs: 'OBSERVATEUR' };
+      const k = {
+        super: 'SUPER',
+        rouge: 'ORGANISATEUR_ROUGE',
+        blanc: 'ORGANISATEUR_BLANC',
+        obs: 'OBSERVATEUR'
+      };
+      // si rôle observateur et mot de passe vide, retourner true
+      if(role === 'obs' && (!pwd || pwd.trim() === '')) return true;
       return _h(pwd) === _AUTH[k[role]];
     }
   };
 })();
-
 /* ── JOURS & MOIS ─────────────────────────────────────── */
 const JOURS_FR = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const MOIS_FR  = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
