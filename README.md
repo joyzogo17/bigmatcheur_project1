@@ -1,141 +1,186 @@
-# ⚽ Big Match Manager — by Joy Zogo
+# ⚽ Big Match Manager — Google Apps Script
+### by Joy Zogo ABAGA
 
-> Application web de gestion de championnat de football de quartier.
-> Gérez vos matchs, suivez les scores, les statistiques, le classement des joueurs et les sanctions disciplinaires.
-
----
-
-## 🚀 Déploiement sur GitHub Pages
-
-### Étapes rapides
-
-1. **Créer un dépôt GitHub**
-   - Allez sur [github.com](https://github.com) → **New Repository**
-   - Nommez-le : `bigmatch-manager` (ou ce que vous voulez)
-   - Visibilité : **Public** (requis pour GitHub Pages gratuit)
-
-2. **Uploader les fichiers**
-   ```
-   bigmatch-manager/
-   ├── index.html
-   ├── style.css
-   ├── script.js
-   └── README.md
-   ```
-
-3. **Activer GitHub Pages**
-   - Allez dans **Settings** → **Pages**
-   - Source : **Deploy from a branch**
-   - Branch : `main` / `root`
-   - Cliquez **Save**
-
-4. **Votre URL sera :**
-   ```
-   https://[votre-username].github.io/bigmatch-manager/
-   ```
+> Version **Google Apps Script** de Big Match Manager.  
+> Interface web complète connectée à **Google Sheets** en temps réel.  
+> Un seul fichier `Code.gs` contient le backend (serveur) ET le frontend (interface).
 
 ---
 
-## 📁 Structure des fichiers
+## 🚀 Déploiement — Étape par Étape
 
-```
-bigmatch-manager-github/
-├── index.html     → Structure HTML, modals, navigation
-├── style.css      → Design complet (couleurs, typographie, responsive)
-├── script.js      → Logique JavaScript (données, tri, stats, auth)
-└── README.md      → Ce guide
-```
+### 1️⃣ Créer un projet Apps Script
+
+1. Allez sur **[script.google.com](https://script.google.com)**
+2. Cliquez sur **"Nouveau projet"**
+3. Renommez le projet : `Big Match Manager`
+
+### 2️⃣ Coller le code
+
+1. Supprimez le contenu de `Code.gs`
+2. Copiez **tout le contenu** de `Code.gs` fourni
+3. Collez-le dans l'éditeur
+4. **Ctrl+S** pour sauvegarder
+
+### 3️⃣ Déployer en tant qu'application web
+
+1. Cliquez sur **"Déployer"** → **"Nouveau déploiement"**
+2. Cliquez sur ⚙️ à côté de "Type" → choisissez **"Application Web"**
+3. Configurez :
+   - **Description** : `Big Match Manager v1`
+   - **Exécuter en tant que** : `Moi`
+   - **Qui a accès** : `Tout le monde` (ou "Tout le monde dans votre organisation")
+4. Cliquez **"Déployer"**
+5. Autorisez les permissions demandées par Google
+6. **Copiez l'URL** de déploiement fournie
+
+### 4️⃣ Initialiser la base de données
+
+1. Ouvrez l'URL de déploiement dans votre navigateur
+2. Connectez-vous en tant que **Super Administrateur**
+3. Sur la page d'accueil, cliquez sur **"⚙️ Initialiser les feuilles Google Sheets"**
+4. Les 4 feuilles sont créées automatiquement avec des données exemples
+
+---
+
+## 📊 Feuilles Google Sheets créées automatiquement
+
+| Feuille | Colonnes | Description |
+|---------|----------|-------------|
+| **MATCHS** | ID, DATE, HEURE, EQUIPE_A, EQUIPE_B, SCORE_A, SCORE_B, LIEU, TYPE, STATUT, NOTES | Tous les matchs |
+| **JOUEURS** | ID, JOUEUR, EQUIPE, BUTS, PASSES, MOIS, SEMAINE | Statistiques joueurs |
+| **SANCTIONS** | ID, JOUEUR, EQUIPE, MATCHS_SANCTIONNES, MOTIF, DATE | Sanctions disciplinaires |
+| **HISTORIQUE** | HORODATAGE, UTILISATEUR, ACTION, CIBLE, DETAILS | Journal de toutes les modifications |
 
 ---
 
 ## 🔐 Connexion et Rôles
 
-| Rôle | Permissions | Mot de passe (démo) |
-|------|-------------|---------------------|
-| **Super Administrateur** | Accès complet (ajout, modification, suppression) | `SuperAdmin2025!` |
-| **Organisateur Rouge** | Voir et gérer l'équipe Rouge uniquement | `RougeFC@2025` |
-| **Organisateur Blanc** | Voir et gérer l'équipe Blanche uniquement | `BlancFC@2025` |
-| **Observateur** | Consultation seule, aucune modification | `Observe2025` |
+> **Sécurité** : La vérification du mot de passe se fait **côté serveur** (Apps Script).  
+> Les mots de passe ne transitent pas en clair dans le navigateur. La vérification utilise un hachage côté serveur — le DOM client ne contient jamais les mots de passe.
 
-> ⚠️ **Sécurité** : Les mots de passe ne sont **jamais stockés en clair** dans le code client. Ils sont vérifiés via une fonction de hachage côté JavaScript. Pour une production réelle, utilisez un backend sécurisé.
+| Rôle | Mot de passe (démo) | Permissions |
+|------|---------------------|-------------|
+| 👑 **Super Administrateur** | `SuperAdmin2025!` | Accès complet (ajout, modification, suppression) |
+| 🔴 **Organisateur Rouge** | `RougeFC@2025` | Matchs et joueurs Équipe Rouge uniquement |
+| 🔵 **Organisateur Blanc** | `BlancFC@2025` | Matchs et joueurs Équipe Blanche uniquement |
+| 👁 **Observateur** | `Observe2025` | Consultation seule |
 
-> 💡 **Personnalisation** : Pour changer les mots de passe, modifiez les valeurs dans `script.js` dans la section `_AUTH`, en remplaçant les chaînes hashées.
+### Changer les mots de passe
+
+Dans `Code.gs`, modifiez les hachages dans l'objet `CREDENTIALS`.  
+Pour générer un nouveau hachage, utilisez la fonction `_hash()` dans l'éditeur Apps Script :
+
+```javascript
+// Dans la console Apps Script (Exécuter > Exécuter la fonction)
+function testHash() {
+  Logger.log(_hash('MonNouveauMotDePasse'));
+}
+```
+
+Copiez la valeur dans les logs et remplacez-la dans `CREDENTIALS`.
 
 ---
 
 ## ✨ Fonctionnalités
 
-### 🏠 Tableau de Bord
-- Statistiques rapides : matchs joués, victoires, buts totaux, sanctions
-- Dernier match en vedette avec score et gagnant
+### 🏠 Accueil / Dashboard
+- Statistiques rapides (matchs joués, victoires, buts, sanctions)
+- **Dernier match** en vedette avec score et gagnant
 - Top 5 buteurs et passeurs en un coup d'œil
+- Bouton d'initialisation (première utilisation)
 
 ### 📋 Tableau des Matchs
-- Toutes les colonnes : Date, Jour (auto), Équipes, Scores, Lieu, Type, Statut, Notes
-- **Tri automatique** par date (plus récent en haut par défaut)
-- **Bouton "Trier / Inverser"** pour changer l'ordre
-- Clic sur les en-têtes pour trier par n'importe quelle colonne
+- Données chargées depuis Google Sheets
+- Tri par colonne (clic sur en-têtes)
+- **Bouton "Trier / Inverser"** pour inverser l'ordre
 - Recherche en temps réel
-- Badges colorés pour statuts et types
-- Modification et suppression selon le rôle
+- Ajout, modification, suppression selon le rôle
+- Badges colorés par statut et type
 
 ### 📊 Statistiques par Équipe
-- Victoires, Défaites, Nuls
-- Buts Marqués, Buts Encaissés
+- Victoires, Défaites, Nuls, Buts Marqués/Encaissés
 - Filtré selon l'équipe connectée
 
 ### 🏆 Top Joueurs
-- **Top 15 mensuel** ou **Top 10 hebdomadaire**
-- Classement buteurs avec médailles (🥇🥈🥉)
+- Top 15 mensuel ou Top 10 hebdomadaire
+- Classement buteurs (🥇🥈🥉)
 - Classement passeurs
 - Formulaire d'enregistrement des statistiques
 
 ### 🚨 Sanctions Disciplinaires
-- Tableau : Joueur, Équipe, Matchs sanctionnés, Motif, Date
+- Tableau avec couleurs selon la gravité (1 → vert, 2 → orange, 3+ → rouge)
 - Ajout, modification, suppression
-- **Génération de résumé** trimestriel ou annuel
-- Impression du résumé
+- Génération de résumé trimestriel ou annuel imprimable
+
+### 📜 Historique des Modifications
+- Journal complet : toutes les actions (ajout, modification, suppression)
+- 100 dernières entrées affichées
+- Horodatage, utilisateur, action, détails
 
 ---
 
-## 🎨 Design
+## 🔄 Mise à jour du déploiement
 
-| Élément | Couleur |
-|---------|---------|
-| Fond principal | Vert football clair |
-| Équipe Rouge | Rouge `#d32f2f` + blanc |
-| Équipe Blanc | Bleu `#1565c0` + blanc |
-| Équipes extérieures | Orange `#e65100` |
-| En-têtes | Vert foncé `#1a3d1a` |
-| Texte | Noir `#0d0d0d` |
+Après modification du code :
 
----
+1. **"Déployer"** → **"Gérer les déploiements"**
+2. Cliquez sur ✏️ (modifier)
+3. **"Version"** → sélectionnez **"Nouvelle version"**
+4. Cliquez **"Déployer"**
 
-## 💾 Stockage des données
-
-Les données sont stockées dans le **localStorage** du navigateur.
-- ✅ Fonctionne sans serveur
-- ✅ Données persistantes entre sessions
-- ✅ Parfait pour GitHub Pages
-- ⚠️ Les données sont locales à chaque navigateur/appareil
+> ⚠️ L'URL de déploiement reste la même — pas besoin de redistribuer le lien.
 
 ---
 
-## 📱 Responsive
+## 🏗️ Architecture du Code
 
-L'application est optimisée pour :
-- 📱 Mobile (320px+)
-- 💻 Tablette (768px+)
-- 🖥️ Desktop (1280px+)
+```
+Code.gs
+│
+├── BACKEND (Google Apps Script)
+│   ├── doGet()              → Point d'entrée web app
+│   ├── login()              → Authentification sécurisée côté serveur
+│   ├── initSheets()         → Création des feuilles Sheets
+│   │
+│   ├── getMatches()         → Lire tous les matchs
+│   ├── addMatch()           → Ajouter un match
+│   ├── updateMatch()        → Modifier un match
+│   ├── deleteMatch()        → Supprimer un match
+│   │
+│   ├── getJoueurs()         → Lire les stats joueurs
+│   ├── saveStat()           → Ajouter/incrémenter stats
+│   │
+│   ├── getSanctions()       → Lire sanctions
+│   ├── addSanction()        → Ajouter sanction
+│   ├── updateSanction()     → Modifier sanction
+│   ├── deleteSanction()     → Supprimer sanction
+│   │
+│   └── getHistorique()      → Lire journal modifications
+│
+└── FRONTEND (HTML dans getAppHTML())
+    ├── Login multi-rôles
+    ├── Dashboard / Accueil
+    ├── Tableau des matchs (triable)
+    ├── Statistiques par équipe
+    ├── Top buteurs / passeurs
+    ├── Gestion des sanctions
+    └── Historique complet
+```
 
 ---
 
-## 🛠️ Technologies utilisées
+## ⚡ Différences avec la version GitHub Pages
 
-- **HTML5** — Structure sémantique
-- **CSS3** — Variables CSS, Flexbox, Grid, animations
-- **JavaScript ES6+** — Vanilla JS, localStorage, hashage
-- **Google Fonts** — Barlow Condensed + Lato
+| Fonctionnalité | GitHub Pages | Google Apps Script |
+|---------------|--------------|-------------------|
+| Hébergement | GitHub | Google serveurs |
+| Données | localStorage (local) | Google Sheets (cloud) |
+| Multi-utilisateurs simultanés | ❌ | ✅ |
+| Authentification | Côté client (haché) | **Côté serveur** (plus sûr) |
+| Historique des modifications | localStorage | Google Sheets |
+| Export données | Non | Via Google Sheets |
+| Coût | Gratuit | Gratuit (quotas Google) |
 
 ---
 

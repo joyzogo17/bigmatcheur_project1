@@ -18,10 +18,10 @@ const _AUTH = (() => {
   };
   /* Identifiants hashés — mot de passe jamais en clair dans le DOM */
   return {
-    SUPER:        _h('Super2025!'),
-    ORGANISATEUR_ROUGE: _h('Rouge@45'),
-    ORGANISATEUR_BLANC: _h('BlancFC@25'),
-    OBSERVATEUR:  _h('0000'),
+    SUPER:        _h('SuperAdmin2025!'),
+    ORGANISATEUR_ROUGE: _h('RougeFC@2025'),
+    ORGANISATEUR_BLANC: _h('BlancFC@2025'),
+    OBSERVATEUR:  _h('Observe2025'),
     check: (role, pwd) => {
       const k = { super: 'SUPER', rouge: 'ORGANISATEUR_ROUGE', blanc: 'ORGANISATEUR_BLANC', obs: 'OBSERVATEUR' };
       return _h(pwd) === _AUTH[k[role]];
