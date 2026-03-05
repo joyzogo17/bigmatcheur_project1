@@ -591,16 +591,40 @@ function togglePinVisibility() {
 }
 
 function doLogin() {
-  if (!selectedRole) { document.getElementById('loginError').textContent = 'Sélectionnez un rôle'; return; }
+  if (!selectedRole) { 
+    document.getElementById('loginError').textContent = 'Sélectionnez un rôle'; 
+    return; 
+  }
+
   const pwd = document.getElementById('pinInput').value;
-  if (!pwd) { document.getElementById('loginError').textContent = 'Entrez le mot de passe'; return; }
+
+  // Si rôle Résultats et mot de passe vide, autoriser la connexion
+  if (selectedRole === 'resultats' && (!pwd || pwd.trim() === '')) {
+    currentUser = { role: selectedRole, name: 'Résultats' };
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userNameDisplay').textContent = currentUser.name;
+    document.getElementById('userDot').className = 'user-dot dot-obs'; // garder classe obs
+    applyPermissions();
+    renderMatchTable();
+    renderStatsSection();
+    renderTopLists();
+    renderSanctionsTable();
+    notify('Bienvenue, ' + currentUser.name + ' !');
+    return;
+  }
+
+  // Vérification standard pour les autres rôles
+  if (!pwd) { 
+    document.getElementById('loginError').textContent = 'Entrez le mot de passe'; 
+    return; 
+  }
 
   if (_AUTH.check(selectedRole, pwd)) {
-    const names = { super:'Super Administrateur', rouge:'Organisateur Rouge', blanc:'Organisateur Blanc', obs:'Observateur' };
+    const names = { super:'Super Administrateur', rouge:'Organisateur Rouge', blanc:'Organisateur Blanc', obs:'Observateur', resultats:'Résultats' };
     currentUser = { role: selectedRole, name: names[selectedRole] };
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('userNameDisplay').textContent = currentUser.name;
-    const dotCls = { super:'dot-super', rouge:'dot-rouge', blanc:'dot-blanc', obs:'dot-obs' };
+    const dotCls = { super:'dot-super', rouge:'dot-rouge', blanc:'dot-blanc', obs:'dot-obs', resultats:'dot-obs' }; // dot-obs pour résultats
     document.getElementById('userDot').className = 'user-dot ' + dotCls[selectedRole];
     applyPermissions();
     renderMatchTable();
