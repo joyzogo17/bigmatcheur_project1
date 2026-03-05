@@ -52,13 +52,14 @@
     <div class="pin-section" id="pinSection" style="display:none">
       <div class="pin-label">Mot de passe</div>
       <div class="pin-wrap">
-        <input type="password" class="pin-input" id="pinInput" placeholder="Entrez le mot de passe" autocomplete="off">
+        <input type="password" id="passwordInput" placeholder="Mot de passe" 
+        onkeyup="if(event.key==='Enter'){doLogin();}" />
         <button class="pin-toggle" id="pinToggle" onclick="togglePinVisibility()" type="button">👁</button>
       </div>
     </div>
 
     <button class="btn-login" onclick="doLogin()" style="margin-top:16px">
-      ⚡ Se connecter
+     Se connecter
     </button>
     <div class="login-error" id="loginError"></div>
 
