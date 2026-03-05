@@ -3,644 +3,587 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="description" content="Big Match Manager by Joy Zogo — Gérez vos matchs, scores et statistiques de football de quartier.">
-  <title>Big Match Manager — by Joy Zogo</title>
+  <meta name="description" content="Big Match Manager v2.1 by Joy Zogo — Gestion statistiques football entre amis">
+  <meta name="theme-color" content="#030d06">
+  <title>Big Match Manager v2.1 — by Joy Zogo</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Favicon emoji -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════
-     OVERLAY DE CONNEXION
-     ═══════════════════════════════════════════════════════ -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-card">
+<!-- ═══════════════════════════════════════════════════════════════
+     PAGE DE CONNEXION
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="login-page" id="loginPage">
 
-    <div class="login-brand">
-      <span class="ball-big">⚽</span>
-      <h1>BIG MATCH<br>MANAGER</h1>
-      <div class="by">by Joy Zogo</div>
+  <!-- Terrain décoratif SVG -->
+  <div class="login-pitch-bg">
+    <svg viewBox="0 0 700 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="698" height="448" stroke="white" stroke-width="2"/>
+      <line x1="350" y1="1" x2="350" y2="449" stroke="white" stroke-width="2"/>
+      <circle cx="350" cy="225" r="70" stroke="white" stroke-width="2"/>
+      <circle cx="350" cy="225" r="3" fill="white"/>
+      <!-- Surfaces de réparation -->
+      <rect x="1" y="130" width="120" height="190" stroke="white" stroke-width="2"/>
+      <rect x="579" y="130" width="120" height="190" stroke="white" stroke-width="2"/>
+      <rect x="1" y="175" width="50" height="100" stroke="white" stroke-width="2"/>
+      <rect x="649" y="175" width="50" height="100" stroke="white" stroke-width="2"/>
+      <!-- Penalty spots -->
+      <circle cx="104" cy="225" r="3" fill="white"/>
+      <circle cx="596" cy="225" r="3" fill="white"/>
+      <!-- Arc de cercle -->
+      <path d="M 120 165 A 70 70 0 0 1 120 285" stroke="white" stroke-width="2" fill="none"/>
+      <path d="M 580 165 A 70 70 0 0 0 580 285" stroke="white" stroke-width="2" fill="none"/>
+      <!-- Corners -->
+      <path d="M 1 20 A 20 20 0 0 1 20 1" stroke="white" stroke-width="2" fill="none"/>
+      <path d="M 680 1 A 20 20 0 0 1 699 20" stroke="white" stroke-width="2" fill="none"/>
+      <path d="M 1 430 A 20 20 0 0 0 20 449" stroke="white" stroke-width="2" fill="none"/>
+      <path d="M 680 449 A 20 20 0 0 0 699 430" stroke="white" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="login-container">
+
+    <!-- Header -->
+    <div class="login-header">
+      <div class="login-ball-wrap">⚽</div>
+      <div class="login-title">BIG MATCH<br><span>MANAGER</span></div>
+      <div class="login-version">Version 2.1 · by Joy Zogo</div>
     </div>
 
-    <div class="login-welcome">
-      Bienvenue sur <strong>Big Match Manager by Joy Zogo</strong>.<br>
-      Gérez vos matchs, suivez les scores et les statistiques de votre équipe de manière simple et sécurisée.
+    <!-- Message de bienvenue -->
+    <div class="login-welcome-text">
+      <strong>Bienvenue sur Big Match Manager</strong><br>
+      Une application de gestion des statistiques de matchs de football entre amis.<br>
+      Suivez les scores, les meilleurs buteurs, les passeurs et les performances tout au long de l'année.
     </div>
 
-    <!-- Sélection du rôle -->
-    <div class="role-grid">
-      <button class="role-btn rb-super" data-role="super" onclick="selectRole('super')">
-        <div class="rb-name">Contrôleur</div>
-        <div class="rb-desc">Accès complet</div>
-      </button>
-      <button class="role-btn rb-rouge" data-role="rouge" onclick="selectRole('rouge')">
-        <div class="rb-name">Équipe des Rouges</div>
-        <div class="rb-desc">Organisateur / Participant</div>
-      </button>
-      <button class="role-btn rb-blanc" data-role="blanc" onclick="selectRole('blanc')">
-        <div class="rb-name">Équipe des Blancs</div>
-        <div class="rb-desc">Organisateur / Participant</div>
-      </button>
-      <button class="role-btn rb-obs" data-role="obs" onclick="selectRole('obs')">
-        <div class="rb-name">Résultats</div>
-        <div class="rb-desc">Voir les statistiques</div>
+    <!-- Divider -->
+    <div class="login-divider"><span>Choisissez votre rôle</span></div>
+
+    <!-- OBSERVATEUR — Sans mot de passe — Premier et mis en avant -->
+    <div style="margin-bottom:14px">
+      <button class="btn-obs-direct" onclick="selectRole('obs')">
+        <span style="font-size:22px">👁</span>
+        <div>
+          <div style="font-size:14px;letter-spacing:2px">VOIR LES RÉSULTATS</div>
+          <div style="font-size:10px;opacity:.7;letter-spacing:1px;font-family:var(--font-body);font-weight:400;text-transform:none;margin-top:2px">Voir les résultats et statistiques — Aucun mot de passe requis</div>
+        </div>
+        <span style="font-size:18px;opacity:.6">→</span>
       </button>
     </div>
 
-    <!-- Mot de passe -->
-    <div class="pin-section" id="pinSection" style="display:none">
-      <div class="pin-label">Mot de passe</div>
-      <div class="pin-wrap">
-        <input type="password" id="passwordInput" placeholder="Mot de passe" 
-        onkeyup="if(event.key==='Enter'){doLogin();}" />
-        <button class="pin-toggle" id="pinToggle" onclick="togglePinVisibility()" type="button">👁</button>
+    <!-- Divider -->
+    <div class="login-divider"><span>Accès avec mot de passe</span></div>
+
+    <!-- Grille des rôles avec mot de passe -->
+    <div class="roles-grid">
+      <button class="role-card role-super" data-role="super" onclick="selectRole('super')">
+        <span class="role-label">Super Admin</span>
+        <span class="role-desc">Accès complet</span>
+      </button>
+      <button class="role-card role-rouge" data-role="rouge" onclick="selectRole('rouge')">
+        <span class="role-label">Org. Rouges</span>
+        <span class="role-desc">Équipe Rouge</span>
+      </button>
+      <button class="role-card role-blanc" data-role="blanc" onclick="selectRole('blanc')">
+        <span class="role-label">Org. Blancs</span>
+        <span class="role-desc">Équipe Blanc</span>
+      </button>
+    </div>
+
+    <!-- Champ mot de passe (affiché après sélection rôle) -->
+    <div class="pwd-section" id="pwdSection">
+      <div class="pwd-wrap">
+        <label class="pwd-label">🔐 Mot de passe</label>
+        <div class="pwd-row">
+          <input type="password" class="pwd-input" id="pinInput" placeholder="Entrez votre mot de passe" autocomplete="off">
+          <button class="pwd-toggle" id="pwdToggle" onclick="togglePwd()" type="button">👁</button>
+        </div>
       </div>
+      <button class="btn-connect" onclick="doLogin()">Se connecter</button>
+      <div class="login-error" id="loginError"></div>
     </div>
 
-    <button class="btn-login" onclick="doLogin()" style="margin-top:16px">
-     Se connecter
-    </button>
-    <div class="login-error" id="loginError"></div>
+    <!-- Aide (démo) -->
+    <div class="login-hint">
+      <details>
+        <summary>ℹ️ Aide connexion (mode démo)</summary>
+        <div class="hint-box">
+          Super Admin : <code>Malaga2025!</code><br>
+          Org. Rouges : <code>Rouges@2025</code><br>
+          Org. Blancs : <code>BlancFC@</code><br>
+          Observateur : <code>aucun mot de passe requis</code>
+        </div>
+      </details>
+    </div>
 
-    <!-- Aide mots de passe (seulement en démo) -->
-    <details style="margin-top:20px;cursor:pointer">
-      <summary style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;text-align:center">
-        ℹ️ Aide connexion (démo)
-      </summary>
-      <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:12px;margin-top:10px;font-size:12px;color:rgba(255,255,255,0.5);line-height:2">
-        Super Admin : <code style="color:#90ee90">Malaga2025!</code><br>
-        Équipe Rouge : <code style="color:#ff7070">Rouge2025</code><br>
-        Équipe Blanc : <code style="color:#70a8ff">BlancFC@</code><br>
-        Résultats : <code style="color:#aaa">0000</code>
-      </div>
-    </details>
   </div>
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
-     HEADER
-     ═══════════════════════════════════════════════════════ -->
-<header class="site-header">
-  <div class="header-inner">
-    <div class="logo-block">
-      <div class="logo-ball">⚽</div>
-      <div>
-        <div class="logo-text">BIG MATCH MANAGER</div>
-        <div class="logo-sub">by Joy Zogo</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     APP PRINCIPALE
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <div class="header-ball">⚽</div>
+        <div class="header-title-wrap">
+          <div class="header-title">BIG <span>MATCH</span> MANAGER</div>
+          <div class="header-sub">v2.1 · by Joy Zogo</div>
+        </div>
       </div>
-    </div>
-    <div class="header-user">
-      <div class="user-pill" onclick="logout()">
-        <div class="user-dot dot-super" id="userDot"></div>
-        <span id="userNameDisplay">—</span>
-        <span style="font-size:10px;opacity:.6">↩ Déconnexion</span>
+
+      <!-- Sélecteur d'année -->
+      <div class="year-selector requires-super" style="display:none">
+        <span style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-ghost)">📅</span>
+        <select id="yearSel" onchange="changeYear(this.value)">
+          <option>2025</option>
+        </select>
       </div>
-    </div>
-  </div>
-</header>
 
-<!-- ── NAVIGATION ─────────────────────────────────────── -->
-<nav class="site-nav">
-  <div class="nav-inner">
-    <button class="nav-btn active" onclick="showSection('accueil',this)">🏠 Accueil</button>
-    <button class="nav-btn" onclick="showSection('matchs',this)">📋 Matchs</button>
-    <button class="nav-btn" onclick="showSection('stats',this)">📊 Statistiques</button>
-    <button class="nav-btn" onclick="showSection('top',this)">🏆 Top Joueurs</button>
-    <button class="nav-btn" onclick="showSection('sanctions',this)">🚨 Sanctions</button>
-  </div>
-</nav>
+      <div class="header-spacer"></div>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     CONTENU PRINCIPAL
-     ═══════════════════════════════════════════════════════ -->
-<main class="main-content">
-
-
-  <!-- ─── PAGE : ACCUEIL ──────────────────────────────── -->
-  <section class="page-section active" id="sec-accueil">
-
-    <!-- Bandeau de bienvenue -->
-    <div class="welcome-banner">
-      <div class="wb-greeting">⚡ Tableau de Bord</div>
-      <div class="wb-title">BIG MATCH MANAGER</div>
-      <div class="wb-sub">
-        Bienvenue sur Big Match Manager by Joy Zogo. Gérez vos matchs, suivez les scores
-        et les statistiques de votre équipe de manière simple et sécurisée.
-      </div>
-    </div>
-
-    <!-- Statistiques rapides -->
-    <div class="stats-row" id="quickStatsRow">
-      <div class="stat-box">
-        <div class="stat-val" id="qs-total">0</div>
-        <div class="stat-lbl">Matchs Joués</div>
-      </div>
-      <div class="stat-box sb-rouge">
-        <div class="stat-val" id="qs-vrouges">0</div>
-        <div class="stat-lbl">Victoires Rouges</div>
-      </div>
-      <div class="stat-box sb-blanc">
-        <div class="stat-val" id="qs-vblancs">0</div>
-        <div class="stat-lbl">Victoires Blancs</div>
-      </div>
-      <div class="stat-box sb-gold">
-        <div class="stat-val" id="qs-buts">0</div>
-        <div class="stat-lbl">Buts Totaux</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="qs-sanctions">0</div>
-        <div class="stat-lbl">Sanctions</div>
-      </div>
-    </div>
-
-    <!-- Dernier match -->
-    <div id="lastMatchCard"></div>
-
-    <!-- Grille rapide -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title"><div class="ct-icon">🥇</div> Top 5 Buteurs</div>
-        <div id="quickTopBut"></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><div class="ct-icon">🎯</div> Top 5 Passeurs</div>
-        <div id="quickTopPass"></div>
-      </div>
-    </div>
-
-  </section>
-
-
-  <!-- ─── PAGE : MATCHS ───────────────────────────────── -->
-  <section class="page-section" id="sec-matchs">
-
-    <div class="sec-header">
-      <div class="sec-title">📋 Matchs</div>
-      <div class="toolbar-btns requires-auth">
-        <button class="btn btn-primary" onclick="openAddMatch()">➕ Nouveau Match</button>
-        <button class="btn btn-secondary" onclick="toggleSort()">🔄 Trier / Inverser</button>
-      </div>
-    </div>
-
-    <div class="table-toolbar">
-      <div class="search-box">
-        <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Rechercher un match, équipe, statut...">
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table id="matchTable">
-        <thead>
-          <tr>
-            <th data-col="date">Date <span class="sort-arrow"> ↓</span></th>
-            <th>Jour</th>
-            <th data-col="equipeA">Équipe A <span class="sort-arrow"> ↕</span></th>
-            <th data-col="equipeB">Équipe B <span class="sort-arrow"> ↕</span></th>
-            <th>Score A</th>
-            <th>Score B</th>
-            <th data-col="lieu">Lieu <span class="sort-arrow"> ↕</span></th>
-            <th data-col="type">Type <span class="sort-arrow"> ↕</span></th>
-            <th data-col="statut">Statut <span class="sort-arrow"> ↕</span></th>
-            <th>Notes</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="matchTableBody">
-          <tr><td colspan="11"><div class="empty-state"><div class="es-icon">⚽</div><p>Connectez-vous pour voir les matchs</p></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </section>
-
-
-  <!-- ─── PAGE : STATISTIQUES ─────────────────────────── -->
-  <section class="page-section" id="sec-stats">
-    <div class="sec-header">
-      <div class="sec-title">📊 Statistiques par Équipe</div>
-    </div>
-    <div id="statsContent">
-      <div class="empty-state"><div class="es-icon">📊</div><p>Chargement...</p></div>
-    </div>
-  </section>
-
-
-  <!-- ─── PAGE : TOP JOUEURS ──────────────────────────── -->
-  <section class="page-section" id="sec-top">
-    <div class="sec-header">
-      <div class="sec-title">🏆 Top Joueurs</div>
+      <!-- Boutons actions -->
       <div style="display:flex;align-items:center;gap:10px">
-        <label style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim)">Période :</label>
-        <select class="form-select" id="topTabMode" style="width:140px">
-          <option value="mensuel">Top 15 Mensuel</option>
-          <option value="hebdo">Top 10 Hebdo</option>
-        </select>
+        <button class="btn btn-secondary btn-sm requires-super" style="display:none" onclick="createNewYear()">➕ Année</button>
+        <button class="btn btn-gold btn-sm requires-super" style="display:none" onclick="exportCSV()">⬇️ CSV</button>
+        <button class="btn btn-secondary btn-sm requires-auth" style="display:none" onclick="openPlayersModal()">👤 Joueurs</button>
+        <!-- Badge utilisateur -->
+        <div class="user-badge" onclick="logout()" title="Se déconnecter">
+          <div class="user-dot" id="userDot"></div>
+          <span id="userNameDisplay">—</span>
+          <span style="font-size:10px;opacity:.5">↩</span>
+        </div>
       </div>
     </div>
+  </header>
 
-    <div class="two-col">
+  <!-- NAVIGATION -->
+  <nav class="app-nav">
+    <div class="nav-inner">
+      <button class="nav-tab active" data-sec="accueil"    onclick="showSection('accueil')">🏠 Accueil</button>
+      <button class="nav-tab"        data-sec="matchs"     onclick="showSection('matchs')">📋 Matchs</button>
+      <button class="nav-tab requires-auth" data-sec="saisie" style="display:none" onclick="showSection('saisie')">✏️ Saisie</button>
+      <button class="nav-tab"        data-sec="stats"      onclick="showSection('stats')">📊 Statistiques</button>
+      <button class="nav-tab"        data-sec="classements" onclick="showSection('classements')">🏆 Classements</button>
+      <button class="nav-tab"        data-sec="sanctions"  onclick="showSection('sanctions')">🚨 Sanctions</button>
+      <button class="nav-tab requires-super" data-sec="historique" style="display:none" onclick="showSection('historique')">📜 Historique</button>
+    </div>
+  </nav>
+
+
+  <!-- ═══ CONTENU PRINCIPAL ═══ -->
+  <main class="app-main">
+
+
+    <!-- ─── ACCUEIL ────────────────────────────────────────────── -->
+    <section class="page active" id="sec-accueil">
+
+      <div class="welcome-banner">
+        <div class="wb-eyebrow">⚡ Tableau de Bord</div>
+        <div class="wb-title">BIG MATCH <span>MANAGER</span></div>
+        <div class="wb-desc">Suivez les scores, les meilleurs buteurs, les passeurs et les performances des joueurs tout au long de l'année. Développé par Joy Zogo pour faciliter l'organisation et la mémoire des grands matchs.</div>
+      </div>
+
+      <!-- Stats rapides -->
+      <div class="grid-5" style="margin-bottom:24px">
+        <div class="stat-box">
+          <div class="stat-val" id="qs-matchs">—</div>
+          <div class="stat-lbl">Matchs Joués</div>
+        </div>
+        <div class="stat-box gold">
+          <div class="stat-val" id="qs-buts">—</div>
+          <div class="stat-lbl">Buts Totaux</div>
+        </div>
+        <div class="stat-box rouge">
+          <div class="stat-val" id="qs-rouge">—</div>
+          <div class="stat-lbl">Victoires Rouges</div>
+        </div>
+        <div class="stat-box blanc">
+          <div class="stat-val" id="qs-blanc">—</div>
+          <div class="stat-lbl">Victoires Blancs</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="qs-sanctions" style="color:var(--rouge)">—</div>
+          <div class="stat-lbl">Sanctions</div>
+        </div>
+      </div>
+
+      <!-- Dernier match -->
+      <div id="lastMatchSection"></div>
+
+      <!-- MVP de la saison -->
+      <div class="mvp-card" style="margin-bottom:24px">
+        <span class="mvp-crown">🏆</span>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-ghost);margin-bottom:6px">Meilleur Homme du Match</div>
+        <div class="mvp-name" id="qs-mvp-name">—</div>
+        <div class="mvp-stats">
+          <div class="mvp-stat-item">🏆 <strong id="qs-mvp-count">—</strong></div>
+        </div>
+      </div>
+
+      <!-- Mini top listes -->
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">⚽ Top Buteurs</div>
+          <div id="miniTopButs"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Top Passeurs</div>
+          <div id="miniTopPasses"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏆 Top MVP</div>
+          <div class="rank-list" id="miniMVP"></div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ─── MATCHS ─────────────────────────────────────────────── -->
+    <section class="page" id="sec-matchs">
+      <div class="sec-head">
+        <div class="sec-title">📋 <span class="t-accent">Matchs</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="toggleMatchOrder()">🔄 Trier / Inverser</button>
+          <button class="btn btn-primary btn-sm requires-auth" style="display:none" onclick="showSection('saisie')">➕ Nouveau Match</button>
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span>🔍</span>
+          <input type="text" placeholder="Rechercher un match, équipe, type..." oninput="matchFilter=this.value;renderMatchList()">
+        </div>
+      </div>
+      <div id="matchListWrap">
+        <div class="empty"><div class="ei">⚽</div><p>Connectez-vous pour voir les matchs</p></div>
+      </div>
+    </section>
+
+
+    <!-- ─── SAISIE ──────────────────────────────────────────────── -->
+    <section class="page requires-auth" id="sec-saisie" style="display:none">
+      <div class="sec-head">
+        <div class="sec-title">✏️ <span class="t-accent">Saisie Match</span></div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-title">📋 Informations du Match</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Date *</label>
+            <input type="date" class="form-input" id="saisieDate">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Heure</label>
+            <input type="time" class="form-input" id="saisieHeure" value="14:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type d'événement</label>
+            <select class="form-select" id="saisieType">
+              <option>Big Match</option>
+              <option>Contre</option>
+              <option>Classico</option>
+              <option>Match de gala</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lieu</label>
+            <select class="form-select" id="saisieLieu">
+              <option>Domicile</option>
+              <option>Extérieur</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Statut</label>
+            <select class="form-select" id="saisieStatut" onchange="updateScorerFields()">
+              <option>Joué</option>
+              <option>Pas de match</option>
+              <option>Annulé</option>
+              <option>Arrêté</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <select class="form-select" id="saisieAnnee">
+              <option>2025</option>
+            </select>
+          </div>
+
+          <!-- Équipes et scores -->
+          <div class="form-group">
+            <label class="form-label">Équipe A</label>
+            <select class="form-select" id="saisieEquipeA" onchange="updateScorerFields()">
+              <option value="rouge">🔴 Les Rouges</option>
+              <option value="blanc">🔵 Les Blancs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Score A</label>
+            <input type="number" class="form-input" id="saisieScoreA" min="0" max="30" value="0" style="text-align:center;font-family:var(--font-display);font-size:22px">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Score B</label>
+            <input type="number" class="form-input" id="saisieScoreB" min="0" max="30" value="0" style="text-align:center;font-family:var(--font-display);font-size:22px">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Équipe B</label>
+            <select class="form-select" id="saisieEquipeB" onchange="updateScorerFields()">
+              <option value="blanc">🔵 Les Blancs</option>
+              <option value="rouge">🔴 Les Rouges</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buteurs -->
+      <div class="form-card">
+        <div class="form-title">⚽ Buteurs & Passeurs</div>
+        <div style="font-size:12px;color:var(--text-ghost);margin-bottom:16px">
+          Format : <code style="color:var(--green-neon)">Joueur</code> + <code style="color:var(--green-neon)">Passeur (NC si inconnu)</code><br>
+          Exemple : Jean (Paul), "Charles le gaucher" (Marc). Utilisez "Buteur inconnu" si le buteur n'est pas identifié.
+        </div>
+        <div class="grid-2" style="gap:24px">
+          <div id="scorersA">
+            <div style="color:var(--text-ghost);font-size:12px">Entrez un score pour saisir les buteurs</div>
+          </div>
+          <div id="scorersB">
+            <div style="color:var(--text-ghost);font-size:12px">Entrez un score pour saisir les buteurs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MVP -->
+      <div class="form-card">
+        <div class="form-title">🏆 Homme du Match</div>
+        <div style="font-size:12px;color:var(--text-ghost);margin-bottom:14px">Le MVP est calculé automatiquement (Buts=3pts, Passes=2pts, Victoire=+1pt). Vous pouvez le modifier manuellement.</div>
+        <div class="form-group">
+          <label class="form-label">Homme du Match (laisser vide pour calcul auto)</label>
+          <input type="text" class="form-input" id="saisieMVP" placeholder="Nom du MVP ou laisser vide..." list="playersMVPList">
+          <datalist id="playersMVPList"></datalist>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-card">
+        <div class="form-title">📝 Notes</div>
+        <div class="form-group">
+          <textarea class="form-textarea" id="saisieNotes" placeholder="Commentaires, anecdotes, incidents..."></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="saveMatch()" style="padding:14px 32px;font-size:14px">
+          💾 Enregistrer le Match
+        </button>
+        <button class="btn btn-secondary" onclick="showSection('matchs')">Annuler</button>
+      </div>
+    </section>
+
+
+    <!-- ─── STATISTIQUES ───────────────────────────────────────── -->
+    <section class="page" id="sec-stats">
+      <div class="sec-head">
+        <div class="sec-title">📊 <span class="t-accent">Statistiques</span></div>
+        <button class="btn btn-secondary btn-sm" onclick="renderStats()">🔄 Actualiser</button>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px">
+        <div id="stats_rouge"></div>
+        <div id="stats_blanc"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">🏟️ Bilan des Contres</div>
+        <div id="contreStats"></div>
+      </div>
+    </section>
+
+
+    <!-- ─── CLASSEMENTS ────────────────────────────────────────── -->
+    <section class="page" id="sec-classements">
+      <div class="sec-head">
+        <div class="sec-title">🏆 <span class="t-accent">Classements</span></div>
+      </div>
+
+      <div class="grid-3">
+        <!-- Top Buteurs -->
+        <div class="card">
+          <div class="card-title">⚽ Top Buteurs</div>
+          <div style="margin-bottom:14px">
+            <select class="form-select" id="tabButs" onchange="renderTopButs()" style="width:160px">
+              <option value="annuel">Annuel</option>
+              <option value="mois">Mensuel</option>
+              <option value="trimestre">Trimestriel</option>
+              <option value="semaine">Hebdomadaire</option>
+            </select>
+          </div>
+          <div id="topButsList"></div>
+        </div>
+
+        <!-- Top Passeurs -->
+        <div class="card">
+          <div class="card-title">🎯 Top Passeurs</div>
+          <div style="margin-bottom:14px">
+            <select class="form-select" id="tabPasses" onchange="renderTopPasses()" style="width:160px">
+              <option value="annuel">Annuel</option>
+              <option value="mois">Mensuel</option>
+              <option value="trimestre">Trimestriel</option>
+              <option value="semaine">Hebdomadaire</option>
+            </select>
+          </div>
+          <div id="topPassesList"></div>
+        </div>
+
+        <!-- Top MVP -->
+        <div class="card">
+          <div class="card-title">🏆 Hommes du Match</div>
+          <div id="topMVPList"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ─── SANCTIONS ──────────────────────────────────────────── -->
+    <section class="page" id="sec-sanctions">
+      <div class="sec-head">
+        <div class="sec-title">🚨 <span class="t-accent">Sanctions</span></div>
+        <button class="btn btn-rouge btn-sm requires-auth" style="display:none" onclick="openAddSanction()">➕ Ajouter</button>
+      </div>
+      <div id="sanctionsList"></div>
+    </section>
+
+
+    <!-- ─── HISTORIQUE ─────────────────────────────────────────── -->
+    <section class="page requires-super" id="sec-historique" style="display:none">
+      <div class="sec-head">
+        <div class="sec-title">📜 <span class="t-accent">Historique</span></div>
+      </div>
       <div class="card">
-        <div class="card-title"><div class="ct-icon">⚽</div> Meilleurs Buteurs</div>
-        <div class="top-list" id="buteursList">
-          <div class="empty-state"><div class="es-icon">⚽</div><p>Connectez-vous</p></div>
-        </div>
+        <div id="histoContent"></div>
       </div>
-      <div class="card">
-        <div class="card-title"><div class="ct-icon">🎯</div> Meilleurs Passeurs</div>
-        <div class="top-list" id="passeursList">
-          <div class="empty-state"><div class="es-icon">🎯</div><p>Connectez-vous</p></div>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <div class="card requires-auth">
-      <div class="card-title"><div class="ct-icon">➕</div> Enregistrer un Buteur / Passeur</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Joueur</label>
-          <input type="text" class="form-input" id="tpJoueur" placeholder="Nom du joueur">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Équipe</label>
-          <select class="form-select" id="tpEquipe">
-            <option>Les Rouges</option>
-            <option>Les Blancs</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mois</label>
-          <input type="text" class="form-input" id="tpMois" placeholder="ex: Janvier 2025">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Semaine N°</label>
-          <input type="number" class="form-input" id="tpSemaine" min="1" max="52" placeholder="3">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nombre de Buts</label>
-          <input type="number" class="form-input" id="tpButs" min="0" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nombre de Passes</label>
-          <input type="number" class="form-input" id="tpPasses" min="0" placeholder="0">
+
+  </main><!-- /app-main -->
+
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="fb-name">⚽ BIG MATCH MANAGER v2.1</div>
+        <p>Application de gestion des statistiques de matchs de football entre amis.<br>
+          Suivez scores, buteurs, passeurs et performances tout au long de l'année.</p>
+        <div class="social-links">
+          <a href="https://github.com/joyzogo" target="_blank" class="social-btn">🐙 GitHub</a>
+          <a href="https://linkedin.com/in/joyzogo" target="_blank" class="social-btn">💼 LinkedIn</a>
+          <a href="https://facebook.com/joyzogo" target="_blank" class="social-btn">📘 Facebook</a>
         </div>
       </div>
-      <div style="margin-top:14px">
-        <button class="btn btn-primary" onclick="saveStat()">💾 Enregistrer les Stats</button>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:joyzogo.pro@gmail.com">📧 joyzogo.pro@gmail.com</a>
+        <a href="tel:+24177866740">📞 +241 77 86 67 40</a>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <span onclick="showSection('accueil')">🏠 Accueil</span>
+        <span onclick="showSection('matchs')">📋 Matchs</span>
+        <span onclick="showSection('stats')">📊 Statistiques</span>
+        <span onclick="showSection('classements')">🏆 Classements</span>
+        <span onclick="showSection('sanctions')">🚨 Sanctions</span>
       </div>
     </div>
-  </section>
-
-
-  <!-- ─── PAGE : SANCTIONS ────────────────────────────── -->
-  <section class="page-section" id="sec-sanctions">
-    <div class="sec-header">
-      <div class="sec-title">🚨 Gestion des Sanctions</div>
-      <button class="btn btn-rouge requires-auth" onclick="openAddSanction()">➕ Nouvelle Sanction</button>
+    <div class="footer-bottom">
+      <strong>Développé par Joy ZOGO ABAGA</strong> ·
+      joyzogo.pro@gmail.com · +241 77 86 67 40 ·
+      &copy; <span id="yr"></span> Big Match Manager v2.1 — Tous droits réservés
     </div>
+  </footer>
 
-    <div class="table-wrap" style="margin-bottom:20px">
-      <table>
-        <thead>
-          <tr>
-            <th>Joueur</th>
-            <th>Équipe</th>
-            <th>Matchs Sanctionnés</th>
-            <th>Motif</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="sanctionsBody">
-          <tr><td colspan="6"><div class="empty-state"><div class="es-icon">✅</div><p>Aucune sanction</p></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Génération résumé -->
-    <div class="card">
-      <div class="card-title"><div class="ct-icon">📄</div> Résumé des Sanctions</div>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px">
-        <select class="form-select" id="resumerPeriode" style="width:160px">
-          <option value="trimestriel">Trimestriel</option>
-          <option value="annuel">Annuel</option>
-        </select>
-        <button class="btn btn-secondary" onclick="generateResume()">📄 Générer le Résumé</button>
-        <button class="btn btn-secondary" onclick="printResume()">🖨️ Imprimer</button>
-      </div>
-      <div id="resumeOutput" style="display:none">
-        <pre id="resumeText" style="background:var(--bg-main);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:12px;font-family:'Courier New',monospace;overflow-x:auto;line-height:1.8;color:var(--text-main)"></pre>
-      </div>
-    </div>
-  </section>
-
-</main><!-- fin main-content -->
+</div><!-- /app-shell -->
 
 
-<!-- ═══════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════════════════
      MODALS
-     ═══════════════════════════════════════════════════════ -->
+     ═══════════════════════════════════════════════════════════════ -->
 
-<!-- Modal Ajout/Édition Match -->
-<div class="modal-overlay hidden" id="matchModal">
-  <div class="modal-box">
-    <div class="modal-title">
-      <span id="modalTitle">Ajouter un Match</span>
-      <button class="modal-close" onclick="closeMatchModal()">✕</button>
-    </div>
-    <form id="matchForm" onsubmit="event.preventDefault(); saveMatch()">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Date *</label>
-          <input type="date" class="form-input" id="fDate" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Heure</label>
-          <input type="time" class="form-input" id="fHeure">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Équipe A *</label>
-          <input type="text" class="form-input" id="fEquipeA" list="equipeslist" placeholder="Les Rouges" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Équipe B *</label>
-          <input type="text" class="form-input" id="fEquipeB" list="equipeslist" placeholder="Les Blancs" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Score A</label>
-          <input type="number" class="form-input" id="fScoreA" min="0" max="50" value="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Score B</label>
-          <input type="number" class="form-input" id="fScoreB" min="0" max="50" value="0">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Lieu</label>
-          <select class="form-select" id="fLieu">
-            <option>Domicile</option>
-            <option>Extérieur</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Type de Match</label>
-          <select class="form-select" id="fType">
-            <option>Big Match</option>
-            <option>Contre</option>
-          </select>
-        </div>
-        <div class="form-group form-full">
-          <label class="form-label">Statut</label>
-          <select class="form-select" id="fStatut">
-            <option>Joué</option>
-            <option>Pas de match</option>
-            <option>Annulé</option>
-            <option>Arrêté</option>
-          </select>
-        </div>
-        <div class="form-group form-full">
-          <label class="form-label">Notes / Commentaires</label>
-          <textarea class="form-textarea" id="fNotes" placeholder="Observations, détails du match..."></textarea>
-        </div>
-      </div>
-      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-        <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-        <button type="button" class="btn btn-secondary" onclick="closeMatchModal()">Annuler</button>
-      </div>
-    </form>
-    <datalist id="equipeslist">
-      <option value="Les Rouges">
-      <option value="Les Blancs">
-      <option value="FC Rival">
-      <option value="FC Champion">
-      <option value="FC Voisins">
-    </datalist>
-  </div>
-</div>
-
-<!-- Modal Ajout/Édition Sanction -->
+<!-- Modal Sanction -->
 <div class="modal-overlay hidden" id="sanctionModal">
-  <div class="modal-box">
-    <div class="modal-title">
-      <span id="sanctionModalTitle">Ajouter une Sanction</span>
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">🚨 Sanction Disciplinaire</div>
       <button class="modal-close" onclick="closeSanctionModal()">✕</button>
     </div>
-    <form id="sanctionForm" onsubmit="event.preventDefault(); saveSanction()">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Joueur *</label>
-          <input type="text" class="form-input" id="sFJoueur" placeholder="Nom du joueur" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Équipe</label>
-          <select class="form-select" id="sFEquipe">
-            <option>Les Rouges</option>
-            <option>Les Blancs</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Matchs Sanctionnés *</label>
-          <input type="number" class="form-input" id="sFMatchs" min="1" max="20" value="1" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Date *</label>
-          <input type="date" class="form-input" id="sFDate" required>
-        </div>
-        <div class="form-group form-full">
-          <label class="form-label">Motif *</label>
-          <input type="text" class="form-input" id="sFMotif" placeholder="Carton rouge, agression, comportement anti-sportif..." required>
-        </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Joueur *</label>
+        <input type="text" class="form-input" id="sFJoueur" placeholder="Nom du joueur">
       </div>
-      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-        <button type="submit" class="btn btn-rouge">💾 Enregistrer</button>
-        <button type="button" class="btn btn-secondary" onclick="closeSanctionModal()">Annuler</button>
+      <div class="form-group">
+        <label class="form-label">Équipe</label>
+        <select class="form-select" id="sFEquipe">
+          <option value="rouge">🔴 Les Rouges</option>
+          <option value="blanc">🔵 Les Blancs</option>
+        </select>
       </div>
-    </form>
+      <div class="form-group">
+        <label class="form-label">Matchs sanctionnés *</label>
+        <input type="number" class="form-input" id="sFMatchs" min="1" max="20" value="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input type="date" class="form-input" id="sFDate">
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Motif *</label>
+        <input type="text" class="form-input" id="sFMotif" placeholder="Carton rouge, agression, comportement anti-sportif...">
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:10px">
+      <button class="btn btn-rouge" onclick="saveSanction()">💾 Enregistrer</button>
+      <button class="btn btn-secondary" onclick="closeSanctionModal()">Annuler</button>
+    </div>
   </div>
 </div>
 
-
-<!-- ═══════════════════════════════════════════════════════
-     FOOTER
-     ═══════════════════════════════════════════════════════ -->
-<footer class="site-footer">
-  <div class="footer-inner">
-
-    <!-- Branding -->
-    <div class="footer-brand">
-      <div class="fb-logo">⚽ BIG MATCH MANAGER</div>
-      <p>Application de gestion de championnat de football de quartier.<br>
-        Suivez les matchs, les scores, les statistiques et les sanctions en temps réel.</p>
-      <div style="margin-top:14px">
-        <div class="social-links">
-          <a href="https://github.com/joyzogo" target="_blank" rel="noopener" class="social-link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-          </a>
-          <a href="https://linkedin.com/in/joyzogo" target="_blank" rel="noopener" class="social-link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            LinkedIn
-          </a>
-          <a href="https://facebook.com/joyzogo" target="_blank" rel="noopener" class="social-link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            Facebook
-          </a>
-        </div>
+<!-- Modal Joueurs -->
+<div class="modal-overlay hidden" id="playersModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">👤 Gestion des Joueurs</div>
+      <button class="modal-close" onclick="closePlayersModal()">✕</button>
+    </div>
+    <div style="margin-bottom:20px">
+      <div class="form-grid" style="grid-template-columns:1fr 1fr auto">
+        <input type="text" class="form-input" id="newPlayerName" placeholder="Nom du joueur">
+        <select class="form-select" id="newPlayerTeam">
+          <option value="rouge">🔴 Les Rouges</option>
+          <option value="blanc">🔵 Les Blancs</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="addPlayer()">➕ Ajouter</button>
       </div>
     </div>
-
-    <!-- Contact -->
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a href="mailto:joyzogo.pro@gmail.com">📧 joyzogo.pro@gmail.com</a>
-      <a href="tel:+24177866740">📞 +241 77 86 67 40</a>
-    </div>
-
-    <!-- Navigation rapide -->
-    <div class="footer-col">
-      <h4>Navigation</h4>
-      <span onclick="showSection('accueil',null)" style="cursor:pointer">🏠 Accueil</span>
-      <span onclick="showSection('matchs',null)" style="cursor:pointer">📋 Matchs</span>
-      <span onclick="showSection('stats',null)" style="cursor:pointer">📊 Statistiques</span>
-      <span onclick="showSection('top',null)" style="cursor:pointer">🏆 Top Joueurs</span>
-      <span onclick="showSection('sanctions',null)" style="cursor:pointer">🚨 Sanctions</span>
-    </div>
-
+    <div id="playersList"></div>
   </div>
-  <div class="footer-bottom">
-    <strong>Développé par Joy ZOGO ABAGA</strong> · joyzogo.pro@gmail.com · +241 77 86 67 40 ·
-    &copy; <span id="yearFooter"></span> Big Match Manager — Tous droits réservés
-  </div>
-</footer>
+</div>
 
 <!-- Notification -->
 <div class="notif" id="notif"></div>
 
-<!-- Script principal -->
-<script src="script.js"></script>
-
-<!-- Script init page accueil (inline car dépend des données) -->
+<script src="app.js"></script>
 <script>
-  document.getElementById('yearFooter').textContent = new Date().getFullYear();
-
-  /* Refresh accueil quand section active */
-  function refreshAccueil() {
-    if (!currentUser) return;
-
-    /* Stats rapides */
-    const cm = matches.filter(m => m.statut === 'Joué');
-    const vrouges = cm.filter(m => (m.equipeA==='Les Rouges'&&m.scoreA>m.scoreB)||(m.equipeB==='Les Rouges'&&m.scoreB>m.scoreA)).length;
-    const vblancs = cm.filter(m => (m.equipeA==='Les Blancs'&&m.scoreA>m.scoreB)||(m.equipeB==='Les Blancs'&&m.scoreB>m.scoreA)).length;
-    const totalButs = cm.reduce((a,m)=>a+Number(m.scoreA||0)+Number(m.scoreB||0),0);
-
-    document.getElementById('qs-total').textContent = cm.length;
-    document.getElementById('qs-vrouges').textContent = vrouges;
-    document.getElementById('qs-vblancs').textContent = vblancs;
-    document.getElementById('qs-buts').textContent = totalButs;
-    document.getElementById('qs-sanctions').textContent = sanctions.length;
-
-    /* Dernier match */
-    const sorted = [...cm].sort((a,b)=>(b.date+b.heure).localeCompare(a.date+a.heure));
-    const last = sorted[0];
-    const lmc = document.getElementById('lastMatchCard');
-    if (last) {
-      const sc1 = Number(last.scoreA), sc2 = Number(last.scoreB);
-      const winner = sc1>sc2?last.equipeA:sc2>sc1?last.equipeB:'Match nul';
-      const winnerCls = winner===last.equipeA?(last.equipeA.includes('Rouge')?'team-rouge':'team-blanc'):(last.equipeB.includes('Blanc')?'team-blanc':'team-rouge');
-      lmc.innerHTML = `
-        <div class="card" style="border-left:4px solid var(--pitch);margin-bottom:20px">
-          <div class="card-title"><div class="ct-icon">⚡</div> Dernier Match — ${formatDate(last.date)} à ${last.heure}</div>
-          <div style="display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 0">
-            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;text-align:right;flex:1;class:${last.equipeA.includes('Rouge')?'team-rouge':'team-blanc'}">${last.equipeA}</div>
-            <div style="font-family:var(--font-display);font-size:48px;font-weight:900;letter-spacing:4px;color:var(--pitch);padding:8px 20px;background:var(--pitch-pale);border-radius:10px">${sc1} — ${sc2}</div>
-            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;text-align:left;flex:1">${last.equipeB}</div>
-          </div>
-          <div style="text-align:center;font-size:14px;color:var(--text-dim)">
-            🏆 <strong class="${winnerCls}" style="font-size:16px">${winner}</strong> ·
-            <span class="badge badge-dom" style="margin:0 4px">${last.lieu}</span>
-            <span class="badge badge-bm" style="margin:0 4px">${last.type}</span>
-          </div>
-          ${last.notes?`<div style="text-align:center;margin-top:8px;font-size:12px;color:var(--text-dim);font-style:italic">${last.notes}</div>`:''}
-        </div>`;
-    }
-
-    /* Quick top 5 */
-    const tb = [...buteurs].sort((a,b)=>b.buts-a.buts).slice(0,5);
-    const tp = [...passeurs].sort((a,b)=>b.passes-a.passes).slice(0,5);
-    const makeQ = (arr, key) => arr.map((p,i)=>`<div class="top-item">
-      <div class="rank-badge ${i<3?'rank-'+(i+1):'rank-n'}">${i+1}</div>
-      <div style="flex:1"><div class="top-name">${p.joueur}</div><div class="top-team ${p.equipe.includes('Rouge')?'team-rouge':'team-blanc'}">${p.equipe}</div></div>
-      <div class="top-count">${p[key]}</div></div>`).join('');
-    document.getElementById('quickTopBut').innerHTML = makeQ(tb,'buts');
-    document.getElementById('quickTopPass').innerHTML = makeQ(tp,'passes');
-  }
-
-  /* Override showSection pour refresh accueil */
-  const _origShowSection = showSection;
-  function showSection(id, btn) {
-    _origShowSection(id, btn);
-    if (id === 'accueil') refreshAccueil();
-    // Sync nav active
-    if (btn) {
-      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-  }
-
-  /* Enregistrer une stat joueur */
-  function saveStat() {
-    if (!currentUser || currentUser.role === 'obs') { notify('Permission refusée','err'); return; }
-    const joueur = document.getElementById('tpJoueur').value.trim();
-    const equipe = document.getElementById('tpEquipe').value;
-    const mois   = document.getElementById('tpMois').value.trim();
-    const sem    = Number(document.getElementById('tpSemaine').value)||0;
-    const buts   = Number(document.getElementById('tpButs').value)||0;
-    const passes = Number(document.getElementById('tpPasses').value)||0;
-    if (!joueur) { notify('Nom du joueur requis','err'); return; }
-
-    // Vérif equipe
-    if (currentUser.role==='rouge'&&equipe!=='Les Rouges'){notify('Vous pouvez seulement gérer l\'équipe Rouge','err');return;}
-    if (currentUser.role==='blanc'&&equipe!=='Les Blancs'){notify('Vous pouvez seulement gérer l\'équipe Blanche','err');return;}
-
-    if (buts>0) {
-      const existing = buteurs.find(b=>b.joueur===joueur&&b.equipe===equipe&&b.mois===mois);
-      if (existing) existing.buts += buts;
-      else buteurs.push({id:nextId.b++,joueur,equipe,buts,mois,semaine:sem});
-    }
-    if (passes>0) {
-      const existing = passeurs.find(p=>p.joueur===joueur&&p.equipe===equipe&&p.mois===mois);
-      if (existing) existing.passes += passes;
-      else passeurs.push({id:nextId.p++,joueur,equipe,passes,mois,semaine:sem});
-    }
-    saveAll();
-    renderTopLists();
-    notify('✅ Statistique enregistrée');
-    document.getElementById('tpJoueur').value='';
-    document.getElementById('tpButs').value='';
-    document.getElementById('tpPasses').value='';
-  }
-
-  function printResume() {
-    window.print();
-  }
-
-  /* Esc close modals */
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeMatchModal();
-      closeSanctionModal();
-    }
-  });
-
-  /* Click outside modal */
-  document.getElementById('matchModal').addEventListener('click', function(e){
-    if(e.target===this) closeMatchModal();
-  });
-  document.getElementById('sanctionModal').addEventListener('click', function(e){
-    if(e.target===this) closeSanctionModal();
-  });
+// Init post-load
+window.addEventListener('load', () => {
+  updateYearSelector();
+});
 </script>
 
 </body>
