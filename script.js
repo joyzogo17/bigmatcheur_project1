@@ -11,7 +11,7 @@ const _AUTH = (() => {
     for (let i = 0; i < s.length; i++) v = (((v << 5) + v) ^ s.charCodeAt(i)) >>> 0;
     return (v + 0xdeadbeef).toString(16).padStart(8,'0');
   };
-  const C = { super: h('SuperAdmin2025!'), rouge: h('Rouges@2025'), blanc: h('BlancFC@') };
+  const C = { super: h('Malaga2025!'), rouge: h('Rouges@2025'), blanc: h('BlancFC@') };
   return { check: (role, pwd) => C[role] && C[role] === h(pwd), h };
 })();
 
