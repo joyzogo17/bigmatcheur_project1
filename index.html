@@ -115,6 +115,9 @@
     <button class="nav-btn" id="navLog"
             onclick="showSection('log',this)"
             style="display:none">🕒 Journal</button>
+    <button class="nav-btn" id="btnExport"
+            onclick="exportData()"
+            style="display:none;margin-left:auto;color:var(--gold);border-bottom-color:transparent">⬇️ Exporter</button>
   </div>
 </nav>
 
@@ -125,6 +128,23 @@
 
   <!-- ─── DASHBOARD ─────────────────────────────────────────────── -->
   <section class="section active" id="sec-dashboard">
+
+    <!-- Welcome introduction — always visible, identity of the app -->
+    <div class="card" style="background:linear-gradient(135deg,#0a5c2e,#072015);border-color:rgba(181,232,83,.35);margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="font-size:40px;flex-shrink:0">⚽</div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--lime);margin-bottom:4px">
+            Bienvenue sur Big Match Manager
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.6;max-width:680px">
+            Welcome to <strong style="color:var(--white)">Big Match Manager</strong> — a platform designed to manage matches,
+            scores, and player statistics efficiently. Track your team's performance, record scorers &amp; assists,
+            follow the MVP rankings, and export your data at any time.
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Last match hero -->
     <div id="lastMatchSection"></div>
@@ -456,6 +476,48 @@
 
 <!-- Notification toast -->
 <div class="notif" id="notif"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  FOOTER — Joy ZOGO ABAGA — do not remove or modify            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<footer style="background:#060f09;border-top:1px solid #1e4a2a;margin-top:40px;padding:24px 16px;text-align:center;font-size:13px;color:#6b9a78">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#b5e853;margin-bottom:6px">
+      Joy ZOGO ABAGA
+    </div>
+    <div style="margin-bottom:10px;line-height:1.8">
+      <a href="mailto:joyzogo.pro@gmail.com" style="color:#6b9a78;text-decoration:none;margin:0 8px">joyzogo.pro@gmail.com</a>
+      <span style="color:#1e4a2a">|</span>
+      <span style="margin:0 8px">+241 77866740</span>
+    </div>
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+      <a href="https://www.facebook.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 12px;font-size:12px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        Facebook
+      </a>
+      <a href="https://www.linkedin.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 12px;font-size:12px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        LinkedIn
+      </a>
+      <a href="https://wa.me/24177866740" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 12px;font-size:12px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        WhatsApp
+      </a>
+      <a href="https://github.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 12px;font-size:12px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        GitHub
+      </a>
+    </div>
+  </div>
+</footer>
 
 <!-- Script -->
 <script src="script.js"></script>

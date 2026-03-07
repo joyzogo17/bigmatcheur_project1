@@ -19,16 +19,9 @@ let playerNames = [];
 async function init() {
   db = loadDB();
   if (!db) {
-    // Load from data.json on first run
-    try {
-      const res  = await fetch('data.json');
-      const json = await res.json();
-      db = json;
-      save();
-    } catch {
-      db = defaultDB();
-      save();
-    }
+    // First run — always start with clean empty data, no demo content
+    db = defaultDB();
+    save();
   }
   buildLogin();
 }
@@ -51,6 +44,36 @@ function loadDB() {
 
 function save() {
   localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+// ── EXPORT ─────────────────────────────────────────────────────────
+/**
+ * exportData()
+ * Exports ALL stored application data as a JSON file.
+ * The downloaded file is named exactly:  data.json
+ * Triggers a browser download automatically.
+ */
+function exportData() {
+  const payload = {
+    exportedAt:  new Date().toISOString(),
+    matches:     db.matches,
+    users:       db.users.map(u => ({ id: u.id, nom: u.nom, role: u.role })),
+    activityLog: db.activityLog,
+    nextId:      db.nextId,
+    nextUserId:  db.nextUserId
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'data.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 300);
+
+  logActivity('Export données JSON');
+  notify('✅ Export data.json téléchargé !');
 }
 
 // ── HELPERS ────────────────────────────────────────────────────────
@@ -271,6 +294,9 @@ function applyPermissions() {
   document.getElementById('navAdd').style.display   = canAdd ? 'block' : 'none';
   document.getElementById('navUsers').style.display = isCtrl ? 'block' : 'none';
   document.getElementById('navLog').style.display   = isCtrl ? 'block' : 'none';
+  // Export button — visible to all authenticated users
+  const expBtn = document.getElementById('btnExport');
+  if (expBtn) expBtn.style.display = 'inline-flex';
 }
 
 // ── NAV ────────────────────────────────────────────────────────────
@@ -327,7 +353,12 @@ function renderLastMatch() {
   );
   const cont = document.getElementById('lastMatchSection');
   if (!played.length) {
-    cont.innerHTML = '<div class="last-match-hero"><div class="empty"><div class="e-icon">⚽</div>Aucun match joué</div></div>';
+    cont.innerHTML = `<div class="last-match-hero">
+      <div class="empty">
+        <div class="e-icon">⚽</div>
+        Aucun match joué pour l'instant — ajoutez votre premier match !
+      </div>
+    </div>`;
     return;
   }
   const m   = played[0];
@@ -516,7 +547,7 @@ function renderStats() {
 
   document.getElementById('teamStatsBody').innerHTML = getTeams(cm).sort((a,b)=>b.scored-a.scored).map(t =>
     `<tr><td style="font-weight:600">${t.name}</td><td>${t.played}</td><td style="color:var(--lime);font-weight:700">${t.scored}</td><td style="color:var(--red)">${t.conceded}</td><td style="color:var(--lime)">${t.wins}</td><td>${t.draws}</td><td style="color:var(--red)">${t.losses}</td></tr>`
-  ).join('') || '<tr><td colspan="7" class="empty">—</td></tr>';
+  ).join('') || '<tr><td colspan="7" class="empty">Aucune donnée — enregistrez des matchs pour voir les statistiques par équipe</td></tr>';
 
   renderPeriodStats(currentStatsPeriod);
 }
@@ -531,22 +562,23 @@ function switchStatsPeriod(period, btn) {
 function renderPeriodStats(period) {
   const yearF = document.getElementById('statsYear')?.value;
   const ps    = getPeriodStats(period, yearF);
+  const noData = '<li style="color:var(--text-dim);padding:16px;text-align:center">Aucune donnée pour cette période</li>';
 
-  const topList = (arr, valKey) => arr.map((p, i) => `
+  const topList = (arr, valKey) => arr.length ? arr.map((p, i) => `
     <li>
       <div class="rank-badge ${i < 3 ? 'rank-' + (i+1) : 'rank-n'}">${i+1}</div>
       <div><div class="player-name">${p.name}</div><div class="player-team">${p.team||''}</div></div>
       <div class="player-stat">${p[valKey]}</div>
-    </li>`).join('') || '<li style="color:var(--text-dim);padding:12px">Pas de données</li>';
+    </li>`).join('') : noData;
 
   document.getElementById('topButeursList').innerHTML  = topList(ps.topButeurs,  'goals');
   document.getElementById('topPasseursList').innerHTML = topList(ps.topPasseurs, 'assists');
-  document.getElementById('topMvpList').innerHTML      = ps.mvp.map((p, i) => `
+  document.getElementById('topMvpList').innerHTML      = ps.mvp.length ? ps.mvp.map((p, i) => `
     <li>
       <div class="rank-badge ${i < 3 ? 'rank-' + (i+1) : 'rank-n'}">${i+1}</div>
       <div><div class="player-name">${p.name} ${i===0?'👑':''}</div><div class="player-team">${p.team||''}</div></div>
       <div class="player-stat" style="color:var(--purple)">${p.mvpPoints}</div>
-    </li>`).join('') || '<li style="color:var(--text-dim);padding:12px">Pas de données</li>';
+    </li>`).join('') : noData;
 }
 
 // ── PALMARÈS ───────────────────────────────────────────────────────
@@ -576,21 +608,21 @@ function renderPalmPeriod(period) {
       <td style="color:var(--text-dim)">${t.played}</td>
     </tr>`).join('') : '<tr><td colspan="4" class="empty">Aucune donnée</td></tr>';
 
-  const rl = (arr, key) => arr.slice(0, 5).map((p, i) => `
+  const rl = (arr, key) => arr.length ? arr.slice(0, 5).map((p, i) => `
     <li>
       <div class="rank-badge ${i<3?'rank-'+(i+1):'rank-n'}">${i+1}</div>
       <div><div class="player-name">${p.name}</div><div class="player-team">${p.team||''}</div></div>
       <div class="player-stat">${p[key]}</div>
-    </li>`).join('') || '<li style="color:var(--text-dim);padding:12px">Aucune donnée</li>';
+    </li>`).join('') : '<li style="color:var(--text-dim);padding:16px;text-align:center">Aucune donnée pour cette période</li>';
 
   document.getElementById('palmBut').innerHTML  = rl(ps.topButeurs,  'goals');
   document.getElementById('palmPass').innerHTML = rl(ps.topPasseurs, 'assists');
-  document.getElementById('palmMvp').innerHTML  = ps.mvp.slice(0,5).map((p,i)=>`
+  document.getElementById('palmMvp').innerHTML  = ps.mvp.length ? ps.mvp.slice(0,5).map((p,i)=>`
     <li>
       <div class="rank-badge ${i<3?'rank-'+(i+1):'rank-n'}">${i+1}</div>
       <div><div class="player-name">${p.name} ${i===0?'👑':''}</div><div class="player-team">${p.team||''}</div></div>
       <div class="player-stat" style="color:var(--purple)">${p.mvpPoints}</div>
-    </li>`).join('') || '<li style="color:var(--text-dim);padding:12px">Aucune donnée</li>';
+    </li>`).join('') : '<li style="color:var(--text-dim);padding:16px;text-align:center">Aucune donnée pour cette période</li>';
 }
 
 // ── ADD MATCH FORM ─────────────────────────────────────────────────
