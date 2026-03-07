@@ -22,44 +22,19 @@ async function init() {
     // First run — always start with clean empty data, no demo content
     db = defaultDB();
     save();
-  } else {
-    // ── Migrate older stored data gracefully (non-destructive) ──
-    let migrated = false;
-    // Add 'type' field to users that lack it
-    db.users.forEach(u => {
-      if (!u.type) {
-        const typeMap = { 'Contrôleur':'admin','Sous-Contrôleur':'admin','Observateur':'obs' };
-        u.type = typeMap[u.role] || 'equipe';
-        migrated = true;
-      }
-    });
-    // Add events array if missing
-    if (!db.events)      { db.events      = [];  migrated = true; }
-    if (!db.nextEventId) { db.nextEventId = 1;   migrated = true; }
-    if (migrated) save();
   }
   buildLogin();
 }
 
 function defaultDB() {
   return {
-    matches:     [],
-    users: [
-      // Administrators
-      { id:1, nom:'Contrôleur',      role:'Contrôleur',       password:'Malaga2025!', type:'admin'  },
-      { id:2, nom:'Sous-Contrôleur', role:'Sous-Contrôleur',  password:'SousCtrl2025', type:'admin' },
-      // Teams — role = team name, type = 'equipe'
-      { id:3, nom:'Rouge',           role:'Rouge',             password:'Rouge2025',   type:'equipe' },
-      { id:4, nom:'Blanc',           role:'Blanc',             password:'BlancFC@',    type:'equipe' },
-      // Observer — no password
-      { id:5, nom:'Observateur',     role:'Observateur',       password:'',            type:'obs'   }
+    matches: [], users: [
+      { id:1, nom:'Contrôleur', role:'Contrôleur', password:'Malaga2025!' },
+      { id:2, nom:'Rouge',      role:'Rouge',       password:'Rouge2025'   },
+      { id:3, nom:'Blanc',      role:'Blanc',       password:'BlancFC@'    },
+      { id:4, nom:'Observateur',role:'Observateur', password:''             }
     ],
-    activityLog: [],
-    nextId:      1,
-    nextUserId:  6,
-    // Future-ready metadata fields
-    events:      [],   // {id, nom, date, lieu, saison}
-    nextEventId: 1
+    activityLog: [], nextId: 1, nextUserId: 5
   };
 }
 
@@ -247,203 +222,54 @@ function isLocked(match) {
   return (Date.now() - d.getTime()) / 3600000 > 24;
 }
 
-// ── LOGIN — 3-PANEL MODULAR SYSTEM ────────────────────────────────
-
-// ── Colour tokens per panel (hex/rgb/name — fully changeable) ──────
-const LOGIN_COLORS = {
-  admin: { border: '#f5c842', glow: 'rgba(245,200,66,.25)', bg: 'rgba(245,200,66,.08)' },
-  team:  { border: '#4fc3f7', glow: 'rgba(79,195,247,.25)', bg: 'rgba(79,195,247,.08)' },
-  obs:   { border: '#6b9a78', glow: 'rgba(107,154,120,.2)', bg: 'rgba(107,154,120,.06)' },
-  main:  { border: '#1e4a2a', glow: 'transparent',          bg: 'transparent' }
-};
-
-/**
- * buildLogin()
- * Initialise the login UI: populate the team dropdown, reset panels.
- */
+// ── LOGIN ──────────────────────────────────────────────────────────
 function buildLogin() {
-  populateTeamDropdown();
-  showLoginPanel('main');
+  // role buttons are static HTML, nothing to build dynamically
 }
 
-/** Populate #teamSelect with all users of type 'equipe'. */
-function populateTeamDropdown() {
-  const sel = document.getElementById('teamSelect');
-  if (!sel) return;
-  const teams = db.users.filter(u => u.type === 'equipe');
-  sel.innerHTML = '<option value="">— Choisir une équipe —</option>' +
-    teams.map(u => `<option value="${u.id}">${u.nom}</option>`).join('');
-
-  const noTeams = document.getElementById('teamNoTeams');
-  if (noTeams) noTeams.style.display = teams.length ? 'none' : 'block';
+function selectRole(role) {
+  if (role === 'Observateur') {
+    completeLogin({ id: 4, nom: 'Observateur', role: 'Observateur' });
+    return;
+  }
+  loginTarget = db.users.find(u => u.role === role) || { nom: role, role };
+  document.getElementById('roleSelectionDiv').style.display = 'none';
+  document.getElementById('pwSection').style.display        = 'block';
+  document.getElementById('pwTitle').textContent            = 'Mot de passe — ' + role;
+  document.getElementById('pwInput').value                  = '';
+  setTimeout(() => document.getElementById('pwInput').focus(), 80);
 }
 
-/**
- * showLoginPanel(panel)
- * Switches between: 'main' | 'admin' | 'team'
- * Updates login box border colour dynamically.
- */
-function showLoginPanel(panel) {
-  ['panelMain','panelAdmin','panelTeam'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-
-  // Reset error
-  const err = document.getElementById('loginError');
-  if (err) err.style.display = 'none';
-
-  // Reset pw sub-sections
-  const aPs = document.getElementById('adminPwSection');
-  if (aPs) aPs.style.display = 'none';
-  const aSel = document.getElementById('adminRoleSelect');
-  if (aSel) aSel.value = '';
-
-  const tPs = document.getElementById('teamPwSection');
-  if (tPs) tPs.style.display = 'none';
-  const tSel = document.getElementById('teamSelect');
-  if (tSel) tSel.value = '';
-
-  // Show target panel
-  const targetPanel = { main:'panelMain', admin:'panelAdmin', team:'panelTeam' }[panel] || 'panelMain';
-  const el = document.getElementById(targetPanel);
-  if (el) el.style.display = 'block';
-
-  // Apply dynamic border colour
-  applyLoginColor(panel);
+function cancelLogin() {
+  document.getElementById('roleSelectionDiv').style.display = 'block';
+  document.getElementById('pwSection').style.display        = 'none';
 }
 
-/** Apply dynamic border/glow colour to the login box. */
-function applyLoginColor(panel) {
-  const box = document.getElementById('loginBox');
-  if (!box) return;
-  const c = LOGIN_COLORS[panel] || LOGIN_COLORS.main;
-  box.style.borderColor  = c.border;
-  box.style.boxShadow    = `0 20px 60px rgba(0,0,0,.8), 0 0 0 1px ${c.border}, 0 0 40px ${c.glow}`;
-}
-
-// ── PANEL: ADMIN ──────────────────────────────────────────────────
-function onAdminRoleChange() {
-  const sel = document.getElementById('adminRoleSelect');
-  const pws = document.getElementById('adminPwSection');
-  const ttl = document.getElementById('adminPwTitle');
-  const inp = document.getElementById('adminPwInput');
-  if (!sel || !pws) return;
-
-  const err = document.getElementById('loginError');
-  if (err) err.style.display = 'none';
-
-  if (!sel.value) { pws.style.display = 'none'; return; }
-
-  pws.style.display = 'block';
-  if (ttl) ttl.textContent = sel.value === 'Contrôleur'
-    ? '🛡️ Mot de passe — Contrôleur'
-    : '🔑 Mot de passe — Sous-Contrôleur';
-  if (inp) { inp.value = ''; inp.focus(); }
-}
-
-function checkAdminPassword() {
-  const role = document.getElementById('adminRoleSelect')?.value;
-  const pw   = document.getElementById('adminPwInput')?.value;
-  if (!role) { showLoginError('Sélectionnez un niveau d\'accès'); return; }
-
-  const user = db.users.find(u => u.role === role && u.password === pw);
+function checkPassword() {
+  const pw = document.getElementById('pwInput').value;
+  const user = db.users.find(u => u.role === loginTarget.role && u.password === pw);
   if (user) {
     completeLogin(user);
   } else {
-    showLoginError('Mot de passe incorrect');
-    document.getElementById('adminPwInput').value = '';
-    document.getElementById('adminPwInput').focus();
+    notify('Mot de passe incorrect', true);
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
   }
 }
 
-// ── PANEL: TEAM ───────────────────────────────────────────────────
-function onTeamSelectChange() {
-  const sel = document.getElementById('teamSelect');
-  const pws = document.getElementById('teamPwSection');
-  const ttl = document.getElementById('teamPwTitle');
-  const inp = document.getElementById('teamPwInput');
-  if (!sel || !pws) return;
-
-  const err = document.getElementById('loginError');
-  if (err) err.style.display = 'none';
-
-  if (!sel.value) { pws.style.display = 'none'; return; }
-
-  const team = db.users.find(u => u.id === Number(sel.value));
-  pws.style.display = 'block';
-  if (ttl) ttl.textContent = `👥 Mot de passe — ${team?.nom || ''}`;
-  if (inp) { inp.value = ''; inp.focus(); }
-}
-
-function checkTeamPassword() {
-  const sel  = document.getElementById('teamSelect');
-  const pw   = document.getElementById('teamPwInput')?.value;
-  const tid  = Number(sel?.value);
-  if (!tid) { showLoginError('Sélectionnez une équipe'); return; }
-
-  // Strict: password must match THIS team exactly — not another team's
-  const user = db.users.find(u => u.id === tid && u.type === 'equipe' && u.password === pw);
-  if (user) {
-    completeLogin(user);
-  } else {
-    showLoginError('Mot de passe incorrect pour cette équipe');
-    document.getElementById('teamPwInput').value = '';
-    document.getElementById('teamPwInput').focus();
-  }
-}
-
-// ── OBSERVER: direct access ───────────────────────────────────────
-function loginAsObserver() {
-  const obs = db.users.find(u => u.type === 'obs') ||
-              { id: 99, nom: 'Observateur', role: 'Observateur', type: 'obs' };
-  completeLogin(obs);
-}
-
-// ── SHARED LOGIN ERROR ────────────────────────────────────────────
-function showLoginError(msg) {
-  const err = document.getElementById('loginError');
-  if (!err) { notify(msg, true); return; }
-  err.textContent = '⚠ ' + msg;
-  err.style.display = 'block';
-  setTimeout(() => { err.style.display = 'none'; }, 3500);
-}
-
-// ── KEYBOARD: Enter to submit ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('adminPwInput')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkAdminPassword();
-  });
-  document.getElementById('teamPwInput')?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkTeamPassword();
+  document.getElementById('pwInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
   });
 });
-
-// ── LEGACY STUBS — kept so any external references don't break ────
-function selectRole(role)  { /* superseded by 3-panel login */ }
-function cancelLogin()     { showLoginPanel('main'); }
-function checkPassword()   { /* superseded */ }
-
-
 
 function completeLogin(user) {
   currentUser = user;
   document.getElementById('loginOverlay').style.display = 'none';
   document.getElementById('userName').textContent  = user.nom;
   document.getElementById('userRole').textContent  = user.role;
-
-  // Role dot colour
-  const roleClass = {
-    'Contrôleur':      'role-ctrl',
-    'Sous-Contrôleur': 'role-sub',
-    'Observateur':     'role-obs'
-  };
-  // Teams get role-rouge / role-blanc or generic role-team
-  const teamClass = user.type === 'equipe'
-    ? (user.role === 'Rouge' ? 'role-rouge' : user.role === 'Blanc' ? 'role-blanc' : 'role-team')
-    : null;
-  document.getElementById('roleDot').className = 'role-dot ' + (teamClass || roleClass[user.role] || 'role-obs');
-
+  const roleClass = { 'Contrôleur': 'role-ctrl', 'Rouge': 'role-rouge', 'Blanc': 'role-blanc', 'Observateur': 'role-obs' };
+  document.getElementById('roleDot').className     = 'role-dot ' + (roleClass[user.role] || 'role-obs');
   applyPermissions();
   populateYearSelectors();
   refreshPlayerNames();
@@ -456,26 +282,18 @@ function logout() {
   logActivity('Déconnexion');
   save();
   currentUser = null;
-  const ol = document.getElementById('loginOverlay');
-  if (ol) ol.style.display = 'flex';
-  buildLogin(); // re-initialise 3-panel login
+  document.getElementById('loginOverlay').style.display  = 'flex';
+  document.getElementById('pwSection').style.display     = 'none';
+  document.getElementById('roleSelectionDiv').style.display = 'block';
 }
 
 function applyPermissions() {
   const role   = currentUser.role;
-  const type   = currentUser.type || 'obs';
-
-  // Who can add matches: admins + teams (not observer)
-  const canAdd = type === 'admin' || type === 'equipe';
-  // Who sees user management / journal: only super-admin
-  const isSuperAdmin = role === 'Contrôleur';
-  // Sous-Contrôleur sees journal but not user management
-  const isAnyAdmin   = type === 'admin';
-
-  document.getElementById('navAdd').style.display    = canAdd     ? 'block' : 'none';
-  document.getElementById('navUsers').style.display  = isSuperAdmin ? 'block' : 'none';
-  document.getElementById('navLog').style.display    = isAnyAdmin   ? 'block' : 'none';
-
+  const canAdd = role === 'Contrôleur' || role === 'Rouge' || role === 'Blanc';
+  const isCtrl = role === 'Contrôleur';
+  document.getElementById('navAdd').style.display   = canAdd ? 'block' : 'none';
+  document.getElementById('navUsers').style.display = isCtrl ? 'block' : 'none';
+  document.getElementById('navLog').style.display   = isCtrl ? 'block' : 'none';
   // Export button — visible to all authenticated users
   const expBtn = document.getElementById('btnExport');
   if (expBtn) expBtn.style.display = 'inline-flex';
@@ -693,9 +511,7 @@ function renderHistory() {
 }
 
 function deleteMatch(id) {
-  if (!currentUser || currentUser.role !== 'Contrôleur') {
-    notify('Seul le Contrôleur peut supprimer', true); return;
-  }
+  if (!currentUser || currentUser.role !== 'Contrôleur') { notify('Seul le Contrôleur peut supprimer', true); return; }
   const m = db.matches.find(x => x.id === id);
   if (!m || !confirm('Supprimer ce match ?')) return;
   logActivity(`Suppression match : ${m.eq1||'?'} vs ${m.eq2||'?'} — ${m.date}`);
@@ -837,13 +653,12 @@ function resetForm() {
 }
 
 function saveMatch() {
-  if (!currentUser || currentUser.type === 'obs') { notify('Permission refusée', true); return; }
+  if (!currentUser || currentUser.role === 'Observateur') { notify('Permission refusée', true); return; }
 
-  const userType = currentUser.type;  // 'admin' | 'equipe'
-  const role     = currentUser.role;
-  const date     = document.getElementById('fDate').value;
-  const heure    = document.getElementById('fHeure').value;
-  const type     = document.getElementById('fType').value;
+  const role   = currentUser.role;
+  const date   = document.getElementById('fDate').value;
+  const heure  = document.getElementById('fHeure').value;
+  const type   = document.getElementById('fType').value;
   const statut = document.getElementById('fStatut').value;
   const motif  = document.getElementById('fMotif').value;
   const eq1    = document.getElementById('fEq1').value.trim();
@@ -855,7 +670,7 @@ function saveMatch() {
 
   if (!date) { notify('La date est obligatoire', true); return; }
 
-  // Teams & Sous-Contrôleur cannot enter matches older than 24h
+  // Rouge/Blanc : check the match date isn't older than 24h
   if (role !== 'Contrôleur') {
     const matchDt = new Date(date + 'T' + (heure || '12:00') + ':00');
     if ((Date.now() - matchDt.getTime()) / 3600000 > 24) {
@@ -927,79 +742,31 @@ document.addEventListener('click', e => {
 function renderUsers() {
   const isCtrl = currentUser?.role === 'Contrôleur';
   document.getElementById('btnAddUser').style.display = isCtrl ? 'inline-flex' : 'none';
-  const roleBadge = {
-    'Contrôleur':      'badge-ctrl',
-    'Sous-Contrôleur': 'badge-sub',
-    'Rouge':           'badge-rouge',
-    'Blanc':           'badge-blanc',
-    'Observateur':     'badge-obs'
-  };
+  const roleBadge = { 'Contrôleur':'badge-ctrl','Rouge':'badge-rouge','Blanc':'badge-blanc','Observateur':'badge-obs' };
   document.getElementById('usersBody').innerHTML = db.users.map(u => `
     <tr>
       <td style="font-weight:600">${u.nom}</td>
       <td><span class="badge ${roleBadge[u.role]||'badge-obs'}">${u.role}</span></td>
-      <td><span class="badge" style="background:rgba(107,154,120,.12);color:var(--text-dim);border:1px solid var(--border)">${u.type || 'obs'}</span></td>
       <td style="letter-spacing:4px;color:var(--text-dim)">••••••</td>
       <td>${isCtrl && u.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">🗑</button>` : '—'}</td>
     </tr>`).join('');
 }
 
-function openAddUser() {
-  // Populate existing teams in the role dropdown
-  const grp = document.getElementById('existingTeamsGroup');
-  if (grp) {
-    const teams = db.users.filter(u => u.type === 'equipe');
-    grp.innerHTML = teams.map(u =>
-      `<option value="${u.role}">👥 ${u.nom} (${u.role})</option>`
-    ).join('');
-    if (!teams.length) grp.style.display = 'none';
-    else grp.style.display = '';
-  }
-  document.getElementById('uRole').value = '';
-  document.getElementById('customTeamRow').style.display = 'none';
-  document.getElementById('addUserCard').style.display = 'block';
-}
-
-function onUserRoleChange() {
-  const val = document.getElementById('uRole').value;
-  document.getElementById('customTeamRow').style.display =
-    val === '__new_team__' ? 'block' : 'none';
-}
-
-function cancelAddUser() {
-  document.getElementById('addUserCard').style.display = 'none';
-  document.getElementById('customTeamRow').style.display = 'none';
-}
+function openAddUser()   { document.getElementById('addUserCard').style.display = 'block'; }
+function cancelAddUser() { document.getElementById('addUserCard').style.display = 'none'; }
 
 function saveUser() {
   if (!currentUser || currentUser.role !== 'Contrôleur') { notify('Permission refusée', true); return; }
-  const nom    = document.getElementById('uNom').value.trim();
-  let   role   = document.getElementById('uRole').value;
-  const pw     = document.getElementById('uPin').value;
-
-  if (!role) { notify('Sélectionnez un rôle', true); return; }
-  if (!nom)  { notify('Le nom est obligatoire', true); return; }
-
-  // Handle "new team" option — use custom team name as role
-  if (role === '__new_team__') {
-    const customName = document.getElementById('uTeamName')?.value.trim();
-    if (!customName) { notify('Entrez un nom d\'équipe', true); return; }
-    role = customName;
-  }
-
-  if (!pw && role !== 'Observateur') { notify('Mot de passe requis', true); return; }
-
-  // Determine account type from role
-  const typeMap = { 'Contrôleur': 'admin', 'Sous-Contrôleur': 'admin', 'Observateur': 'obs' };
-  const type    = typeMap[role] || 'equipe';
-
-  db.users.push({ id: db.nextUserId++, nom, role, password: pw, type });
-  logActivity(`Ajout utilisateur : ${nom} (${role} / ${type})`);
+  const nom  = document.getElementById('uNom').value.trim();
+  const role = document.getElementById('uRole').value;
+  const pw   = document.getElementById('uPin').value;
+  if (!nom || !pw) { notify('Nom et mot de passe requis', true); return; }
+  db.users.push({ id: db.nextUserId++, nom, role, password: pw });
+  logActivity(`Ajout utilisateur : ${nom} (${role})`);
   save();
   cancelAddUser();
   renderUsers();
-  populateTeamDropdown(); // refresh login team dropdown
-  notify('✅ Utilisateur ajouté');
+  notify('Utilisateur ajouté');
 }
 
 function deleteUser(id) {
@@ -1010,35 +777,7 @@ function deleteUser(id) {
   db.users = db.users.filter(x => x.id !== id);
   save();
   renderUsers();
-  populateTeamDropdown(); // keep login team dropdown in sync
   notify('Utilisateur supprimé');
-}
-
-// ── FUTURE-READY ID GENERATORS ─────────────────────────────────────
-/**
- * generatePlayerId()
- * Returns a 6-character alphanumeric ID tied to registration date.
- * Format: P + YYMMDD-XX  (e.g. P250307A2)
- * Ready for migration to MongoDB/PostgreSQL.
- */
-function generatePlayerId() {
-  const now = new Date();
-  const yy  = String(now.getFullYear()).slice(2);
-  const mm  = String(now.getMonth() + 1).padStart(2, '0');
-  const dd  = String(now.getDate()).padStart(2, '0');
-  const rnd = Math.random().toString(36).slice(2, 4).toUpperCase();
-  return `P${yy}${mm}${dd}${rnd}`;
-}
-
-/**
- * generateEventId()
- * Returns a unique event ID.  Format:  EVT-YYYY-NNN
- */
-function generateEventId() {
-  const year = new Date().getFullYear();
-  const seq  = String(db.nextEventId++).padStart(3, '0');
-  save();
-  return `EVT-${year}-${seq}`;
 }
 
 // ── JOURNAL ────────────────────────────────────────────────────────
