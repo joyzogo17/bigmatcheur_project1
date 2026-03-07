@@ -13,62 +13,111 @@
 <!--  LOGIN OVERLAY                                                  -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="ball">⚽</div>
-      <h1>BIG MATCH MANAGER</h1>
-      <p>Choisissez votre rôle pour continuer</p>
-    </div>
+  <div class="login-box" id="loginBox">
 
-    <!-- Role selection -->
-    <div id="roleSelectionDiv">
-      <button class="role-btn role-btn-ctrl" onclick="selectRole('Contrôleur')">
+    <!-- ── PANEL 0 : ACCUEIL ─────────────────────────────────── -->
+    <div id="panelMain">
+      <div class="login-logo">
+        <div class="ball">⚽</div>
+        <h1>BIG MATCH MANAGER</h1>
+        <p class="login-welcome">Bienvenue sur Big Match Manager</p>
+        <p class="login-sub">Sélectionnez votre accès pour continuer</p>
+      </div>
+
+      <button class="role-btn role-btn-admin" onclick="showLoginPanel('admin')">
         <div class="role-icon">🛡️</div>
         <div>
-          <div class="role-name">Contrôleur</div>
-          <div class="role-desc">Accès complet — Super administrateur</div>
+          <div class="role-name">Administrateur</div>
+          <div class="role-desc">Contrôleur ou Sous-contrôleur</div>
         </div>
+        <div class="role-arrow">›</div>
       </button>
-      <button class="role-btn role-btn-rouge" onclick="selectRole('Rouge')">
-        <div class="role-icon">🔴</div>
+
+      <button class="role-btn role-btn-team" onclick="showLoginPanel('team')">
+        <div class="role-icon">👥</div>
         <div>
-          <div class="role-name">Rouge</div>
-          <div class="role-desc">Responsable Équipe Rouge</div>
+          <div class="role-name">Équipe</div>
+          <div class="role-desc">Connexion par équipe enregistrée</div>
         </div>
+        <div class="role-arrow">›</div>
       </button>
-      <button class="role-btn role-btn-blanc" onclick="selectRole('Blanc')">
-        <div class="role-icon">⚪</div>
-        <div>
-          <div class="role-name">Blanc</div>
-          <div class="role-desc">Responsable Équipe Blanche</div>
-        </div>
-      </button>
-      <button class="role-btn role-btn-obs" onclick="selectRole('Observateur')">
+
+      <button class="role-btn role-btn-obs" onclick="loginAsObserver()">
         <div class="role-icon">👁️</div>
         <div>
-          <div class="role-name">Observateur</div>
-          <div class="role-desc">Voir les résultats — Accès libre</div>
+          <div class="role-name">Voir les résultats</div>
+          <div class="role-desc">Statistiques globales — Accès libre</div>
         </div>
+        <div class="role-arrow">›</div>
       </button>
     </div>
 
-    <!-- Password section (shown after role selection) -->
-    <div id="pwSection" style="display:none">
-      <div class="pw-section">
-        <div class="pw-title" id="pwTitle">Mot de passe</div>
-        <div class="form-group">
-          <input type="password" class="form-input pw-input" id="pwInput" placeholder="Mot de passe">
+    <!-- ── PANEL 1 : ADMINISTRATEUR ──────────────────────────── -->
+    <div id="panelAdmin" style="display:none">
+      <div class="login-panel-header">
+        <button class="back-btn" onclick="showLoginPanel('main')">← Retour</button>
+        <div class="panel-title">🛡️ Administrateur</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Niveau d'accès</label>
+        <select class="form-select login-select" id="adminRoleSelect" onchange="onAdminRoleChange()">
+          <option value="">— Sélectionner —</option>
+          <option value="Contrôleur">🛡️ Contrôleur — Super Administrateur</option>
+          <option value="Sous-Contrôleur">🔑 Sous-Contrôleur — Accès limité</option>
+        </select>
+      </div>
+
+      <div id="adminPwSection" style="display:none">
+        <div class="pw-section" id="adminPwBox">
+          <div class="pw-title" id="adminPwTitle">Mot de passe</div>
+          <div class="form-group">
+            <input type="password" class="form-input pw-input" id="adminPwInput" placeholder="Mot de passe">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkAdminPassword()">
+            🔐 Connexion
+          </button>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkPassword()">
-          Connexion
-        </button>
-        <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="cancelLogin()">
-          ← Retour
-        </button>
       </div>
     </div>
-  </div>
-</div>
+
+    <!-- ── PANEL 2 : ÉQUIPE ───────────────────────────────────── -->
+    <div id="panelTeam" style="display:none">
+      <div class="login-panel-header">
+        <button class="back-btn" onclick="showLoginPanel('main')">← Retour</button>
+        <div class="panel-title">👥 Connexion Équipe</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Sélectionner votre équipe</label>
+        <select class="form-select login-select" id="teamSelect" onchange="onTeamSelectChange()">
+          <option value="">— Choisir une équipe —</option>
+        </select>
+      </div>
+
+      <div id="teamPwSection" style="display:none">
+        <div class="pw-section" id="teamPwBox">
+          <div class="pw-title" id="teamPwTitle">Mot de passe de l'équipe</div>
+          <div class="form-group">
+            <input type="password" class="form-input pw-input" id="teamPwInput" placeholder="Mot de passe">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkTeamPassword()">
+            🔐 Connexion
+          </button>
+        </div>
+      </div>
+
+      <div id="teamNoTeams" style="display:none;text-align:center;padding:20px;color:var(--text-dim);font-size:13px">
+        Aucune équipe enregistrée.<br>
+        <span style="font-size:11px">Un administrateur doit d'abord créer des équipes.</span>
+      </div>
+    </div>
+
+    <!-- ── Password error message (shared) ───────────────────── -->
+    <div id="loginError" class="login-error" style="display:none"></div>
+
+  </div><!-- /login-box -->
+</div><!-- /login-overlay -->
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!--  HEADER                                                         -->
@@ -424,7 +473,7 @@
     <div class="card" style="padding:0;overflow:hidden">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nom</th><th>Rôle</th><th>Mot de passe</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Nom</th><th>Rôle</th><th>Type</th><th>Mot de passe</th><th>Actions</th></tr></thead>
           <tbody id="usersBody"></tbody>
         </table>
       </div>
@@ -437,13 +486,26 @@
           <input type="text" class="form-input" id="uNom" placeholder="Nom d'utilisateur">
         </div>
         <div class="form-group">
-          <label class="form-label">Rôle</label>
-          <select class="form-select" id="uRole">
-            <option value="Contrôleur">Contrôleur</option>
-            <option value="Rouge">Rouge</option>
-            <option value="Blanc">Blanc</option>
-            <option value="Observateur">Observateur</option>
+          <label class="form-label">Rôle / Type</label>
+          <select class="form-select" id="uRole" onchange="onUserRoleChange()">
+            <option value="">— Sélectionner —</option>
+            <optgroup label="Administrateurs">
+              <option value="Contrôleur">🛡️ Contrôleur (Super Admin)</option>
+              <option value="Sous-Contrôleur">🔑 Sous-Contrôleur</option>
+            </optgroup>
+            <optgroup label="Équipes existantes" id="existingTeamsGroup"></optgroup>
+            <optgroup label="Nouvelle équipe">
+              <option value="__new_team__">➕ Créer une nouvelle équipe…</option>
+            </optgroup>
+            <optgroup label="Autre">
+              <option value="Observateur">👁️ Observateur</option>
+            </optgroup>
           </select>
+        </div>
+        <!-- Custom team name — shown only when "Nouvelle équipe" is selected -->
+        <div class="form-group" id="customTeamRow" style="display:none">
+          <label class="form-label">Nom de l'équipe</label>
+          <input type="text" class="form-input" id="uTeamName" placeholder="Ex: Vert, Jaune, Club X…">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
@@ -486,7 +548,7 @@
       Joy ZOGO ABAGA
     </div>
     <div style="margin-bottom:10px;line-height:1.8">
-      <a href="mailto:joyzogo.pro@gmail.com" style="color:#6b9a78;text-decoration:none;margin:0 8px">joyzogo.pro@gmail.com</a>
+      <a href="/cdn-cgi/l/email-protection#147e7b6d6e7b737b3a64667b547379757d783a777b79" style="color:#6b9a78;text-decoration:none;margin:0 8px"><span class="__cf_email__" data-cfemail="e3898c9a998c848ccd93918ca3848e828a8fcd808c8e">[email&#160;protected]</span></a>
       <span style="color:#1e4a2a">|</span>
       <span style="margin:0 8px">+241 77866740</span>
     </div>
@@ -512,14 +574,4 @@
       <a href="https://github.com" target="_blank" rel="noopener"
          style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 12px;font-size:12px;transition:all .2s"
          onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
-         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
-        GitHub
-      </a>
-    </div>
-  </div>
-</footer>
-
-<!-- Script -->
-<script src="script.js"></script>
-</body>
-</html>
+         onmouseout="this.style.color='#6b9a78';this.style.borderCo

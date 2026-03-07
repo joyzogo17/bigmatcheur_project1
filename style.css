@@ -82,10 +82,7 @@ body {
 
 /* ── ROLE DOTS ──────────────────────────────────────────────────── */
 .role-dot     { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.role-ctrl    { background: var(--gold); }
-.role-rouge   { background: var(--red); }
-.role-blanc   { background: #ccc; }
-.role-obs     { background: var(--text-dim); }
+/* Role dot colours defined in LOGIN OVERLAY section below */
 
 /* ── NAV ────────────────────────────────────────────────────────── */
 .nav {
@@ -478,14 +475,66 @@ tbody td          { padding: 10px 12px; vertical-align: middle; }
   border-radius: 16px;
   padding: 32px;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   box-shadow: 0 20px 60px rgba(0,0,0,.8);
+  transition: border-color .3s, box-shadow .3s;
 }
 .login-logo       { text-align: center; margin-bottom: 24px; }
 .login-logo .ball { font-size: 48px; margin-bottom: 8px; }
 .login-logo h1    { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--lime); }
-.login-logo p     { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+.login-welcome    { font-size: 14px; color: var(--white); font-weight: 600; margin-top: 6px; }
+.login-sub        { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
 
+/* ── Login panel navigation ─────────────────────────────────────── */
+.login-panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+}
+.login-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  color: var(--lime);
+}
+.back-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+/* ── Login select field ──────────────────────────────────────────── */
+.login-select {
+  font-size: 14px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+/* ── Main panel role buttons ─────────────────────────────────────── */
 /* Role buttons */
 .role-btn {
   width: 100%;
@@ -504,14 +553,20 @@ tbody td          { padding: 10px 12px; vertical-align: middle; }
   border: 2px solid transparent;
 }
 .role-btn:hover { transform: translateX(3px); }
+.role-arrow { margin-left: auto; font-size: 20px; opacity: .5; }
+.role-btn-admin { background: rgba(245,200,66,.1);  color: var(--gold);      border-color: rgba(245,200,66,.3); }
+.role-btn-admin:hover  { background: rgba(245,200,66,.2); border-color: var(--gold); }
+.role-btn-team  { background: rgba(79,195,247,.1);  color: #4fc3f7;           border-color: rgba(79,195,247,.3); }
+.role-btn-team:hover   { background: rgba(79,195,247,.2); border-color: #4fc3f7; }
+.role-btn-obs   { background: rgba(107,154,120,.1); color: var(--text-dim);  border-color: var(--border); }
+.role-btn-obs:hover    { background: rgba(107,154,120,.2); border-color: var(--text-dim); }
+/* Legacy role-btn variants kept for compatibility */
 .role-btn-ctrl  { background: rgba(245,200,66,.12);  color: var(--gold);  border-color: rgba(245,200,66,.3); }
 .role-btn-ctrl:hover  { background: rgba(245,200,66,.2); border-color: var(--gold); }
 .role-btn-rouge { background: rgba(230,57,70,.12);   color: var(--red);   border-color: rgba(230,57,70,.3); }
 .role-btn-rouge:hover { background: rgba(230,57,70,.2); border-color: var(--red); }
 .role-btn-blanc { background: rgba(248,250,245,.08); color: var(--white); border-color: rgba(248,250,245,.2); }
 .role-btn-blanc:hover { background: rgba(248,250,245,.14); border-color: var(--white); }
-.role-btn-obs   { background: rgba(107,154,120,.12); color: var(--text-dim); border-color: var(--border); }
-.role-btn-obs:hover   { background: rgba(107,154,120,.2); border-color: var(--text-dim); }
 .role-icon   { font-size: 24px; flex-shrink: 0; }
 .role-name   { font-weight: 700; font-size: 15px; }
 .role-desc   { font-size: 11px; opacity: .7; margin-top: 2px; }
@@ -520,6 +575,33 @@ tbody td          { padding: 10px 12px; vertical-align: middle; }
 .pw-section  { background: rgba(0,0,0,.2); border-radius: 10px; padding: 16px; margin-top: 4px; }
 .pw-title    { font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 10px; text-align: center; }
 .pw-input    { text-align: center; letter-spacing: 3px; font-size: 16px; }
+
+/* Login error banner */
+.login-error {
+  background: rgba(230,57,70,.12);
+  border: 1px solid rgba(230,57,70,.35);
+  border-radius: 8px;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 14px;
+  margin-top: 12px;
+  text-align: center;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+/* ── Role dot colours ────────────────────────────────────────────── */
+.role-dot        { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.role-ctrl       { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+.role-sub        { background: #a78bfa; box-shadow: 0 0 6px #a78bfa; }
+.role-rouge      { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.role-blanc      { background: var(--white); box-shadow: 0 0 6px var(--white); }
+.role-team       { background: #4fc3f7; box-shadow: 0 0 6px #4fc3f7; }
+.role-obs        { background: var(--text-dim); }
+
+/* ── Badge for Sous-Contrôleur ───────────────────────────────────── */
+.badge-sub { background: rgba(167,139,250,.15); color: #a78bfa; border: 1px solid rgba(167,139,250,.3); }
 
 /* ── NOTIFICATION ────────────────────────────────────────────────── */
 .notif {
